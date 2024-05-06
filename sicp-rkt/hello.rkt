@@ -21,10 +21,11 @@
       (- x)
       x))
 
-(define (>= x y) (or (> x y) (= x y)))
-
-(define (average x y)
-  (/ (+ x y) 2))
+(define (inc n) (+ n 1))
+(define (dec n) (- n 1))
+(define (double n) (* n 2))
+(define (halve n) (/ n 2))
+(define (average x y) (halve (+ x y)))
 
 (define (improve guess x)
   (average guess (/ x guess)))
@@ -78,3 +79,25 @@
         b
         (iter (+ a b) a (- count 1))))
   (iter 1 0 n))
+
+(define (expt b n)
+  (if (= n 0)
+      1
+      (* b (expt b (- n 1)))))
+
+(define (expt1 b n)
+  (define (iter counter product)
+    (if (= counter 0)
+        product
+        (iter (- counter 1) (* b product))))
+  (iter n 1))
+
+(define (fast-expt b n)
+  (cond ((= n 0) 1)
+        ((even? n) (square (fast-expt b (/ n 2))))
+        (else (* b (fast-expt b (- n 1))))))
+
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
