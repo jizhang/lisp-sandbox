@@ -101,3 +101,64 @@
   (if (= b 0)
       a
       (gcd b (remainder a b))))
+
+(define (sum term a next b)
+  (if (> a b)
+      0
+      (+ (term a)
+         (sum term (next a) next b))))
+
+(define (sum-cubes a b)
+  (define (cube n) (* n n n))
+  (sum cube a inc b))
+
+(define (sum-integers a b)
+  (define (identity n) n)
+  (sum identity a inc b))
+
+(define (pi-sum a b)
+  (define (term x) (/ 1.0 (* x (+ x 2))))
+  (define (next x) (+ x 4))
+  (sum term a next b))
+
+(define (sum1 term a next b)
+  (define (iter a result)
+    (if (> a b)
+        result
+        (iter (next a) (+ (term a) result))))
+  (iter a 0))
+
+(define (pi-sum1 a b)
+  (sum1 (lambda (x) (/ 1.0 (* x (+ x 2))))
+        a
+        (lambda (x) (+ x 4))
+        b))
+
+(define (f x y)
+  (let ((a (+ 1 (* x y)))
+        (b (- 1 y)))
+    (+ (* x (square a))
+       (* y b)
+       (* a b))))
+
+(define (search f neg-point pos-point)
+  (define (close-enough? x y) (< (abs (- x y)) 0.001))
+  (let ((midpoint (average neg-point pos-point)))
+    (if (close-enough? neg-point pos-point)
+        midpoint
+        (let ((test-value (f midpoint)))
+          (cond ((positive? test-value)
+                 (search f neg-point midpoint))
+                ((negative? test-value)
+                 (search f midpoint pos-point))
+                (else midpoint))))))
+
+(define (half-interval-method f a b)
+  (let ((a-value (f a))
+        (b-value (f b)))
+    (cond ((and (negative? a-value) (positive? b-value))
+           (search f a b))
+          ((and (negative? b-value) (positive? a-value))
+           (search f b a))
+          (else
+           (error "Values are not of opposite sign" a b)))))
