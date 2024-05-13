@@ -1,4 +1,5 @@
-#lang racket
+#lang sicp
+
 (define pi 3.14159)
 (define radius 10)
 (define circumference (* 2 pi radius))
@@ -7,22 +8,20 @@
 (define (sum-of-squares x y)
   (+ (square x) (square y)))
 
-(define (abs x)
+(define (abs1 x)
   (cond ((> x 0) x)
         ((= x 0) 0)
         ((< x 0) (- x))))
 
-(define (abs1 x)
+(define (abs2 x)
   (cond ((< x 0) (- x))
         (else x)))
 
-(define (abs2 x)
+(define (abs3 x)
   (if (< x 0)
       (- x)
       x))
 
-(define (inc n) (+ n 1))
-(define (dec n) (- n 1))
 (define (double n) (* n 2))
 (define (halve n) (/ n 2))
 (define (average x y) (halve (+ x y)))
