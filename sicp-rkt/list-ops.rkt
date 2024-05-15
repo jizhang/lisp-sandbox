@@ -44,3 +44,56 @@
           (else
            (iter result (cdr rest)))))
   (iter (list a) w))
+
+(define (scale-list items factor)
+  (if (null? items)
+      nil
+      (cons (* (car items) factor)
+            (scale-list (cdr items) factor))))
+
+(define (map1 proc items)
+  (if (null? items)
+      nil
+      (cons (proc (car items))
+            (map1 proc (cdr items)))))
+
+(define (scale-list1 items factor)
+  (map (lambda (x) (* x factor)) items))
+
+(define (square-list items)
+  (map (lambda (x) (* x x)) items))
+
+(define (for-each1 proc items)
+  (cond ((not (null? items))
+         (proc (car items))
+         (for-each1 proc (cdr items)))))
+
+(define (count-leaves x)
+  (cond ((null? x) 0)
+        ((not (pair? x)) 1)
+        (else (+ (count-leaves (car x))
+                 (count-leaves (cdr x))))))
+
+(define (fringe items)
+  (if (null? items)
+      nil
+      (let ((first (car items))
+            (rest (cdr items)))
+        (if (pair? first)
+            (append (fringe first) (fringe rest))
+            (cons first (fringe rest))))))
+
+(define (fringe1 items)
+  (cond ((null? items) nil)
+        ((not (pair? items)) (list items))
+        (else (append (fringe1 (car items))
+                      (fringe1 (cdr items))))))
+
+(define (fringe2 items)
+  (define (iter items result)
+    (cond ((null? items) result)
+          ((pair? items)
+           (iter (car items)
+                 (iter (cdr items) result)))
+          (else (cons items result))))
+  (iter items nil))
