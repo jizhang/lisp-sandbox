@@ -1,5 +1,13 @@
 #lang sicp
 
+(define (square x) (* x x))
+
+(define (fib n)
+  (cond ((= n 0) 0)
+        ((= n 1) 1)
+        (else (+ (fib (- n 1))
+                 (fib (- n 2))))))
+
 (define (list-ref1 items n)
   (if (zero? n)
       (car items)
@@ -97,3 +105,92 @@
                  (iter (cdr items) result)))
           (else (cons items result))))
   (iter items nil))
+
+(define (scale-tree tree factor)
+  (cond ((null? tree) nil)
+        ((not (pair? tree)) (* tree factor))
+        (else (cons (scale-tree (car tree) factor)
+                    (scale-tree (cdr tree) factor)))))
+
+(define (tree-map proc tree)
+  (map (lambda (sub-tree)
+         (if (pair? sub-tree)
+             (tree-map proc sub-tree)
+             (proc sub-tree)))
+       tree))
+
+(define (square-tree tree)
+  (tree-map square tree))
+
+(define (subsets s)
+  (if (null? s)
+      (list nil)
+      (let ((rest (subsets (cdr s))))
+        (append rest (map (lambda (x) (cons (car s) x)) rest)))))
+
+(define (filter predicate sequence)
+  (cond ((null? sequence) nil)
+        ((predicate (car sequence))
+         (cons (car sequence)
+               (filter predicate (cdr sequence))))
+        (else (filter predicate (cdr sequence)))))
+
+(define (accumulate op initial sequence)
+  (if (null? sequence)
+      initial
+      (op (car sequence)
+          (accumulate op initial (cdr sequence)))))
+
+(define (enumerate-interval low high)
+  (if (> low high)
+      nil
+      (cons low (enumerate-interval (inc low) high))))
+
+(define enumerate-tree fringe1)
+
+(define (sum-odd-squares tree)
+  (accumulate
+   + 0 (map square (filter odd? (enumerate-tree tree)))))
+
+(define (even-fibs n)
+  (accumulate
+   cons
+   nil
+   (filter even? (map fib (enumerate-interval 0 n)))))
+
+(define (map2 p sequence)
+  (accumulate
+   (lambda (x y) (cons (p x) y))
+   nil
+   sequence))
+
+(define (append2 seq1 seq2)
+  (accumulate cons seq2 seq1))
+
+(define (length3 sequence)
+  (accumulate
+   (lambda (x y) (inc y))
+   0
+   sequence))
+
+(define fold-right accumulate)
+
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
+
+(define (reverse1 sequence)
+  (fold-right
+   (lambda (x y) (append y (list x)))
+   nil
+   sequence))
+
+(define (reverse2 sequence)
+  (fold-left
+   (lambda (x y) (cons y x))
+   nil
+   sequence))
