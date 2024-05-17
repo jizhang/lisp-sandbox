@@ -1,8 +1,6 @@
-#lang racket
+#lang sicp
 
 (define (square n) (* n n))
-(define (inc n) (+ n 1))
-(define (dec n) (- n 1))
 (define (double n) (* n 2))
 (define (halve n) (/ n 2))
 

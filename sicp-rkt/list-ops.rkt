@@ -28,7 +28,7 @@
 (define (append1 list1 list2)
   (if (null? list1)
       list2
-      (cons (car list1) (append (cdr list1) list2))))
+      (cons (car list1) (append1 (cdr list1) list2))))
 
 (define (last-pair items)
   (if (or (null? items) (null? (cdr items)))
@@ -158,6 +158,7 @@
    nil
    (filter even? (map fib (enumerate-interval 0 n)))))
 
+; Exercise 2.33
 (define (map2 p sequence)
   (accumulate
    (lambda (x y) (cons (p x) y))
@@ -173,6 +174,14 @@
    0
    sequence))
 
+; Exercise 2.36
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+      nil
+      (cons (accumulate op init (map car seqs))
+            (accumulate-n op init (map cdr seqs)))))
+
+; Exercise 2.38
 (define fold-right accumulate)
 
 (define (fold-left op initial sequence)
@@ -183,6 +192,7 @@
               (cdr rest))))
   (iter initial sequence))
 
+; Exercise 2.39
 (define (reverse1 sequence)
   (fold-right
    (lambda (x y) (append y (list x)))
@@ -194,3 +204,18 @@
    (lambda (x y) (cons y x))
    nil
    sequence))
+
+(define (flatmap proc seq)
+  (accumulate append nil (map proc seq)))
+
+(define (remove item sequence)
+  (filter (lambda (x) (not (= x item)))
+          sequence))
+
+(define (permutations s)
+  (if (null? s)
+      (list nil)
+      (flatmap (lambda (x)
+                 (map (lambda (p) (cons x p))
+                      (permutations (remove x s))))
+               s)))
