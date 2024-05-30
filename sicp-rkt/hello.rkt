@@ -197,3 +197,31 @@
           (else (error "Unknown request: MAKE-ACCOUNT"
                        m))))
   dispatch)
+
+(define (cons1 x y)
+  (define (dispatch m)
+    (cond ((eq? m 'car) x)
+          ((eq? m 'cdr) y)
+          (else (error "Undefined operation: CONS" m))))
+  dispatch)
+
+(define (car1 z) (z 'car))
+(define (cdr1 z) (z 'cdr))
+
+(define (cons2 x y)
+  (define (set-x! v) (set! x v))
+  (define (set-y! v) (set! y v))
+  (define (dispatch m)
+    (cond ((eq? m 'car) x)
+          ((eq? m 'cdr) y)
+          ((eq? m 'set-car!) set-x!)
+          ((eq? m 'set-cdr!) set-y!)
+          (else (error "Undefined operation: CONS" m))))
+  dispatch)
+
+(define (car2 z) (z 'car))
+(define (cdr2 z) (z 'cdr))
+(define (set-car2! z new-value)
+  ((z 'set-car!) new-value))
+(define (set-cdr2! z new-value)
+  ((z 'set-cdr!) new-value))
