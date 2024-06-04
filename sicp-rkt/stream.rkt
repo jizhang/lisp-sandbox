@@ -57,3 +57,6 @@
   (memo-proc (lambda () exp)))
 
 (define (force1 delayed-object) (delayed-object))
+
+(define (fibgen a b) (cons-stream a (fibgen b (+ a b))))
+(define fibs (fibgen 0 1))
