@@ -4,5 +4,5 @@
 	       . "https://stable.melpa.org/packages/"))
 (package-initialize)
 
-(add-hook 'window-setup-hook 'toggle-frame-maximized t)
+(push '(fullscreen . maximized) default-frame-alist)
 (tool-bar-mode -1)
