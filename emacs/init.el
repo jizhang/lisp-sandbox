@@ -12,6 +12,7 @@
 
 (push '(fullscreen . maximized) default-frame-alist)
 (tool-bar-mode -1)
+(setq-default word-wrap t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
