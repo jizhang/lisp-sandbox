@@ -11,8 +11,20 @@
   :config (editorconfig-mode 1))
 
 (push '(fullscreen . maximized) default-frame-alist)
+(push '(background-color . "#FFFFDF") default-frame-alist)
 (tool-bar-mode -1)
 (setq-default word-wrap t)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+
+(when (fboundp 'markdown-mode)
+  (defun bubble ()
+    (interactive)
+    (kill-region (region-beginning) (region-end))
+    (move-beginning-of-line 1)
+    (yank))
+  (defun hook ()
+    (local-set-key (kbd "C-c a") 'bubble))
+  (add-hook 'markdown-mode-hook 'hook))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
