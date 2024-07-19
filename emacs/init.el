@@ -9,10 +9,12 @@
 (use-package markdown-mode
   :init
   (progn
-    (setq markdown-command
-          '("pandoc" "--embed-resources" "--standalone" "--shift-heading-level-by=-1"))
+    (setq markdown-command '("pandoc" "--embed-resources" "--standalone"
+                             "--shift-heading-level-by=-1"))
     (when (eq system-type 'windows-nt)
-      (setq markdown-command-needs-filename t))))
+      (setq markdown-command-needs-filename t)))
+  :bind (:map markdown-mode-map
+         ("C-c a" . bubble-region)))
 
 (use-package editorconfig
   :config (editorconfig-mode 1))
@@ -43,15 +45,11 @@
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 
-(when (fboundp 'markdown-mode)
-  (defun bubble ()
-    (interactive)
-    (kill-region (region-beginning) (region-end))
-    (move-beginning-of-line 1)
-    (yank))
-  (defun hook ()
-    (local-set-key (kbd "C-c a") 'bubble))
-  (add-hook 'markdown-mode-hook 'hook))
+(defun bubble-region ()
+  (interactive)
+  (kill-region (region-beginning) (region-end))
+  (move-beginning-of-line 1)
+  (yank))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
