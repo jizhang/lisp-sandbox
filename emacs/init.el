@@ -7,7 +7,12 @@
 (setq use-package-always-ensure t)
 
 (use-package markdown-mode
-  :init (setq markdown-command '("pandoc" "--embed-resources" "--standalone" "--shift-heading-level-by=-1")))
+  :init
+  (progn
+    (setq markdown-command
+          '("pandoc" "--embed-resources" "--standalone" "--shift-heading-level-by=-1"))
+    (when (eq system-type 'windows-nt)
+      (setq markdown-command-needs-filename t))))
 
 (use-package editorconfig
   :config (editorconfig-mode 1))
@@ -16,6 +21,7 @@
   :config (helm-mode 1))
 
 (use-package helm-gtags
+  :if (not (eq system-type 'windows-nt))
   :init
   (setq
     helm-gtags-ignore-case t
@@ -32,8 +38,10 @@
 (push '(fullscreen . maximized) default-frame-alist)
 (push '(background-color . "#FFFFDF") default-frame-alist)
 (tool-bar-mode -1)
+(column-number-mode 1)
 (setq-default word-wrap t)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 
 (when (fboundp 'markdown-mode)
   (defun bubble ()
