@@ -4,7 +4,8 @@
 (package-initialize)
 
 (use-package markdown-mode
-  :ensure t)
+  :ensure t
+  :init (setq markdown-command '("pandoc" "--embed-resources" "--standalone" "--shift-heading-level-by=-1")))
 
 (use-package editorconfig
   :ensure t
