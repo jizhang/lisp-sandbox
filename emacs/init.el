@@ -14,7 +14,7 @@
     (when (eq system-type 'windows-nt)
       (setq markdown-command-needs-filename t)))
   :bind (:map markdown-mode-map
-         ("C-c a" . bubble-region)))
+              ("C-c a" . bubble-region)))
 
 (use-package editorconfig
   :config (editorconfig-mode 1))
@@ -28,14 +28,13 @@
   (setq
     helm-gtags-ignore-case t
     helm-gtags-auto-update t)
-  :config
-  (progn
-    (add-hook 'c-mode-hook 'helm-gtags-mode)
-    (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
-    (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
-    (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
-    (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
-    (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)))
+  :hook (c-mode . helm-gtags-mode)
+  :bind (:map helm-gtags-mode-map
+              ("C-j" . helm-gtags-select)
+              ("M-." . helm-gtags-dwim)
+              ("M-," . helm-gtags-pop-stack)
+              ("C-c <" . helm-gtags-previous-history)
+              ("C-c >" . helm-gtags-next-history)))
 
 (push '(fullscreen . maximized) default-frame-alist)
 (push '(background-color . "#FFFFDF") default-frame-alist)
