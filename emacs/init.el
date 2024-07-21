@@ -29,7 +29,7 @@
     helm-gtags-auto-update t
     helm-gtags-prefix-key "\C-cg"
     helm-gtags-suggested-key-mapping t)
-  :hook (c-mode . helm-gtags-mode)
+  :hook ((c-mode java-mode) . helm-gtags-mode)
   :bind (:map helm-gtags-mode-map
               ("C-j" . helm-gtags-select)
               ("M-." . helm-gtags-dwim)
@@ -38,13 +38,13 @@
               ("C-c >" . helm-gtags-next-history)))
 
 (use-package company
-  :hook (prog-mode . company-mode)
+  :init (global-company-mode 1)
   :config
   (unless (executable-find "clang")
     (delete 'company-clang company-backends)))
 
 (use-package semantic
-  :hook (prog-mode . semantic-mode)
+  :init (semantic-mode 1)
   :bind (:map semantic-mode-map
               ("C-c C-j" . semantic-ia-fast-jump)
               ("C-c C-s" . semantic-ia-show-summary)))
