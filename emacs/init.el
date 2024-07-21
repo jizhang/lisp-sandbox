@@ -8,11 +8,10 @@
 
 (use-package markdown-mode
   :init
-  (progn
-    (setq markdown-command '("pandoc" "--embed-resources" "--standalone"
-                             "--shift-heading-level-by=-1"))
-    (when (eq system-type 'windows-nt)
-      (setq markdown-command-needs-filename t)))
+  (setq markdown-command '("pandoc" "--embed-resources" "--standalone"
+                           "--shift-heading-level-by=-1"))
+  (when (eq system-type 'windows-nt)
+    (setq markdown-command-needs-filename t))
   :bind (:map markdown-mode-map
               ("C-c a" . bubble-region)))
 
@@ -23,11 +22,13 @@
   :init (helm-mode 1))
 
 (use-package helm-gtags
-  :if (not (eq system-type 'windows-nt))
+  :if (executable-find "gtags")
   :init
   (setq
     helm-gtags-ignore-case t
-    helm-gtags-auto-update t)
+    helm-gtags-auto-update t
+    helm-gtags-prefix-key "\C-cg"
+    helm-gtags-suggested-key-mapping t)
   :hook (c-mode . helm-gtags-mode)
   :bind (:map helm-gtags-mode-map
               ("C-j" . helm-gtags-select)
@@ -37,15 +38,13 @@
               ("C-c >" . helm-gtags-next-history)))
 
 (use-package company
-  :hook (prog-mode . company-mode))
+  :hook (prog-mode . company-mode)
+  :config
+  (unless (executable-find "clang")
+    (delete 'company-clang company-backends)))
 
-(use-package projectile
-  :init (projectile-mode 1)
-  :bind (:map projectile-mode-map
-              ("C-c p" . projectile-command-map)))
-
-(push '(fullscreen . maximized) default-frame-alist)
-(push '(background-color . "#FFFFDF") default-frame-alist)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(add-to-list 'default-frame-alist '(background-color . "#FFFFDF"))
 ;; (menu-bar-mode -1)
 (tool-bar-mode -1)
 (column-number-mode 1)
