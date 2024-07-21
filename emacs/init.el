@@ -43,6 +43,12 @@
   (unless (executable-find "clang")
     (delete 'company-clang company-backends)))
 
+(use-package semantic
+  :hook (prog-mode . semantic-mode)
+  :bind (:map semantic-mode-map
+              ("C-c C-j" . semantic-ia-fast-jump)
+              ("C-c C-s" . semantic-ia-show-summary)))
+
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(background-color . "#FFFFDF"))
 ;; (menu-bar-mode -1)
