@@ -38,7 +38,7 @@
               ("C-c >" . helm-gtags-next-history)))
 
 (use-package company
-  :init (global-company-mode 1)
+  :hook (prog-mode . company-mode)
   :config
   (unless (executable-find "clang")
     (delete 'company-clang company-backends)))
@@ -57,6 +57,10 @@
 (setq-default word-wrap t)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
+
+(when (eq system-type 'windows-nt)
+  (set-face-attribute 'default nil :family "Consolas" :height 105)
+  (set-fontset-font t 'unicode (font-spec :family "微软雅黑" :size 14)))
 
 (defun bubble-region ()
   (interactive)
