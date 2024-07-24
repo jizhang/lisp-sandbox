@@ -59,8 +59,13 @@
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 
 (when (eq system-type 'windows-nt)
-  (set-face-attribute 'default nil :family "Consolas" :height 105)
-  (set-fontset-font t 'unicode (font-spec :family "微软雅黑" :size 14)))
+  (dolist (face (list 'default 'fixed-pitch))
+    (set-face-attribute face nil :family "Consolas" :height 105))
+  (dolist (script (list 'han 'cjk-misc 'kana))
+    (set-fontset-font t script "微软雅黑"))
+  (dolist (script (list 'symbol 'emoji))
+    (set-fontset-font t script "Segoe UI Emoji"))
+  )
 
 (defun bubble-region ()
   (interactive)
