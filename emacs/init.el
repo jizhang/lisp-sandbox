@@ -45,9 +45,11 @@
 
 (use-package semantic
   :init (semantic-mode 1)
-  :bind (:map semantic-mode-map
-              ("C-c C-j" . semantic-ia-fast-jump)
-              ("C-c C-s" . semantic-ia-show-summary)))
+  :config
+  (add-hook 'prog-mode-hook (lambda ()
+                              (local-set-key (kbd "C-c C-j") 'semantic-ia-fast-jump)
+                              (local-set-key (kbd "C-c C-s") 'semantic-ia-show-summary)))
+  )
 
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(background-color . "#FFFFDF"))
