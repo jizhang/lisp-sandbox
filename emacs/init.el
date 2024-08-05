@@ -57,6 +57,7 @@
 (tool-bar-mode -1)
 (column-number-mode 1)
 (setq-default word-wrap t)
+(setq confirm-kill-emacs 'yes-or-no-p)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 
