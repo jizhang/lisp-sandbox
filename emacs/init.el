@@ -8,10 +8,11 @@
 
 (use-package markdown-mode
   :init
-  (setq markdown-command '("pandoc" "--embed-resources" "--standalone"
-                           "--shift-heading-level-by=-1"))
-  (when (eq system-type 'windows-nt)
-    (setq markdown-command-needs-filename t))
+  (progn
+    (setq markdown-command '("pandoc" "--embed-resources" "--standalone"
+                             "--shift-heading-level-by=-1"))
+    (when (eq system-type 'windows-nt)
+      (setq markdown-command-needs-filename t)))
   :bind (:map markdown-mode-map
               ("C-c a" . bubble-region)))
 
@@ -43,14 +44,6 @@
   (unless (executable-find "clang")
     (delete 'company-clang company-backends)))
 
-(use-package semantic
-  :init (semantic-mode 1)
-  :config
-  (add-hook 'prog-mode-hook (lambda ()
-                              (local-set-key (kbd "C-c C-j") 'semantic-ia-fast-jump)
-                              (local-set-key (kbd "C-c C-s") 'semantic-ia-show-summary)))
-  )
-
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(background-color . "#FFFFDF"))
 ;; (menu-bar-mode -1)
@@ -67,8 +60,7 @@
   (dolist (script (list 'han 'cjk-misc 'kana))
     (set-fontset-font t script "微软雅黑"))
   (dolist (script (list 'symbol 'emoji))
-    (set-fontset-font t script "Segoe UI Emoji"))
-  )
+    (set-fontset-font t script "Segoe UI Emoji")))
 
 (defun bubble-region ()
   (interactive)
