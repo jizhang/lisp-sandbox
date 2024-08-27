@@ -55,6 +55,7 @@
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 
 (when (eq system-type 'windows-nt)
+  (set-language-environment "UTF-8")
   (dolist (face (list 'default 'fixed-pitch))
     (set-face-attribute face nil :family "Consolas" :height 105))
   (dolist (script (list 'han 'cjk-misc 'kana))
