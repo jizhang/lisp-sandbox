@@ -43,3 +43,29 @@
        ((and (cadr file) ; Is directory
              (not (equal "." (substring (car file) -1))))
         (setq el-files (append (files-in-below-directory (car file)) el-files)))))))
+
+(defun defuns-per-range (sorted-lengths top-of-ranges)
+  (let ((top-of-range (car top-of-ranges))
+        (number-within-range 0)
+        defuns-per-range-list)
+    (while top-of-ranges
+      (while (and (car sorted-lengths)
+                  (< (car sorted-lengths) top-of-range))
+        (setq number-within-range (1+ number-within-range))
+        (setq sorted-lengths (cdr sorted-lengths)))
+
+      (setq defuns-per-range-list (cons number-within-range defuns-per-range-list))
+      (setq number-within-range 0)
+
+      (setq top-of-ranges (cdr top-of-ranges))
+      (setq top-of-range (car top-of-ranges)))
+
+    (setq defuns-per-range-list (cons (length sorted-lengths) defuns-per-range-list))
+    (nreverse defuns-per-range-list)))
+
+(let* ((dir "c:/Program Files/Emacs/emacs-29.4/share/emacs/29.4/lisp/mail/")
+       (list-of-files (files-in-below-directory dir))
+       (lengths (lengths-list-many-files list-of-files))
+       (sorted-lengths (sort lengths '<))
+       (top-of-ranges (number-sequence 10 300 10)))
+  (defuns-per-range sorted-lengths top-of-ranges))
