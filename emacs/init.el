@@ -57,16 +57,16 @@
 
 (when (eq system-type 'windows-nt)
   (set-language-environment "UTF-8")
-  (dolist (face (list 'default 'fixed-pitch))
+  (dolist (face '(default fixed-pitch))
     (set-face-attribute face nil :family "Consolas" :height 105))
-  (dolist (script (list 'han 'cjk-misc 'kana))
+  (dolist (script '(han cjk-misc kana))
     (set-fontset-font t script "微软雅黑"))
-  (dolist (script (list 'symbol 'emoji))
+  (dolist (script '(symbol emoji))
     (set-fontset-font t script "Segoe UI Emoji")))
 
-(defun bubble-region ()
-  (interactive)
-  (kill-region (region-beginning) (region-end))
+(defun bubble-region (beg end)
+  (interactive "r")
+  (kill-region beg end)
   (move-beginning-of-line 1)
   (yank))
 
