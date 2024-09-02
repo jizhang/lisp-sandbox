@@ -62,10 +62,3 @@
 
     (setq defuns-per-range-list (cons (length sorted-lengths) defuns-per-range-list))
     (nreverse defuns-per-range-list)))
-
-(let* ((dir "c:/Program Files/Emacs/emacs-29.4/share/emacs/29.4/lisp/mail/")
-       (list-of-files (files-in-below-directory dir))
-       (lengths (lengths-list-many-files list-of-files))
-       (sorted-lengths (sort lengths '<))
-       (top-of-ranges (number-sequence 10 300 10)))
-  (defuns-per-range sorted-lengths top-of-ranges))
