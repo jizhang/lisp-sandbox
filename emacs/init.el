@@ -65,7 +65,9 @@
     (set-fontset-font t script "Segoe UI Emoji")))
 
 (defun bubble-region (beg end)
-  (interactive "r")
+  (interactive (if (use-region-p)
+                   (list (region-beginning) (region-end))
+                 (error "No active region")))
   (kill-region beg end)
   (move-beginning-of-line 1)
   (yank))
