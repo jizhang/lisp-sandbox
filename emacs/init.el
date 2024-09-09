@@ -14,7 +14,8 @@
     (when (eq system-type 'windows-nt)
       (setq markdown-command-needs-filename t)))
   :bind (:map markdown-mode-map
-              ("C-c a" . bubble-region)))
+              ("C-c a" . bubble-region)
+              ("C-c d" . insert-date)))
 
 (use-package editorconfig
   :init (editorconfig-mode 1))
@@ -65,12 +66,22 @@
     (set-fontset-font t script "Segoe UI Emoji")))
 
 (defun bubble-region (beg end)
-  (interactive (if (use-region-p)
-                   (list (region-beginning) (region-end))
-                 (error "No active region")))
+  (interactive
+   (progn
+     (barf-if-buffer-read-only)
+     (if (use-region-p)
+         (list (region-beginning) (region-end))
+       (error "No active region"))))
   (kill-region beg end)
   (move-beginning-of-line 1)
   (yank))
+
+(defun insert-date (plain)
+  (interactive "*P")
+  (let ((today (format-time-string "%Y-%m-%d")))
+    (if plain
+        (insert today)
+      (insert "## " today "\n"))))
 
 (defun compile-now ()
   (interactive)
