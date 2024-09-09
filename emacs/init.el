@@ -15,7 +15,8 @@
       (setq markdown-command-needs-filename t)))
   :bind (:map markdown-mode-map
               ("C-c a" . bubble-region)
-              ("C-c d" . insert-date)))
+              ("C-c d" . insert-date)
+              ("C-c c" . calculate-calories)))
 
 (use-package editorconfig
   :init (editorconfig-mode 1))
@@ -82,6 +83,19 @@
     (if plain
         (insert today)
       (insert "## " today "\n"))))
+
+(defun calculate-calories (message-only)
+  (interactive "P")
+  (unless message-only (barf-if-buffer-read-only))
+  (let ((total 0))
+    (save-excursion
+      (while (and (zerop (forward-line -1))
+                  (looking-at "^\\w+\\s-+\\([0-9]+\\)"))
+        (setq total (+ total (string-to-number (match-string 1))))))
+    (if message-only
+        (message "%d" total)
+      (insert (number-to-string total)))
+    total))
 
 (defun compile-now ()
   (interactive)
