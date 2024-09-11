@@ -77,12 +77,14 @@
   (move-beginning-of-line 1)
   (yank))
 
-(defun insert-date (plain)
+(defun insert-date (arg)
   (interactive "*P")
-  (let ((today (format-time-string "%Y-%m-%d")))
-    (if plain
-        (insert today)
-      (insert "## " today "\n"))))
+  (let* ((days (if (integerp arg) arg 0))
+         (time (time-add (current-time) (* days 86400)))
+         (date (format-time-string "%Y-%m-%d" time)))
+    (if (consp arg)
+        (insert date)
+      (insert "## " date "\n"))))
 
 (defun calculate-calories (message-only)
   (interactive "P")
