@@ -101,8 +101,8 @@
 
 (defun compile-now ()
   (interactive)
-  (setq-local compilation-read-command nil)
-  (call-interactively 'compile))
+  (save-buffer)
+  (compile "make"))
 
 (global-set-key (kbd "<f5>") 'compile-now)
 
