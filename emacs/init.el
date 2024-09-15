@@ -84,7 +84,8 @@
          (date (format-time-string "%Y-%m-%d" time)))
     (if (consp arg)
         (insert date)
-      (insert "## " date "\n"))))
+      (insert "## " date "\n"))
+    date))
 
 (defun calculate-calories (message-only)
   (interactive "P")
@@ -102,7 +103,9 @@
 (defun compile-now ()
   (interactive)
   (save-buffer)
-  (compile "make"))
+  (setq-default compile-command "make")
+  (setq-local compilation-read-command nil)
+  (call-interactively 'compile))
 
 (global-set-key (kbd "<f5>") 'compile-now)
 
