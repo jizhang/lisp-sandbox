@@ -26,12 +26,36 @@ int talk_jive(int number, void *some_stuff) {
   return 5;
 }
 
+int add (int a, int b) {
+  return a + b;
+}
+
+int sub(int a, int b) {
+  return a - b;
+}
+
+int mul(int a, int b) {
+  return a * b;
+}
+
+int div(int a, int b) {
+  return a / b;
+}
+
+int (*oper[4])(int a, int b) = { add, sub, mul, div };
+
+int calculate(int op, int a, int b) {
+  return oper[op](a, b);
+}
+
 int main(void) {
   int rv = do_something_nice(41, &talk_jive, &silly_stuff);
   printf("%d\n", rv);
+
+  printf("%d %d\n", calculate(0, 1, 2), calculate(2, 3, 4));
   return 0;
 }
 
 /* Local Variables: */
-/* compile-command: "gcc function_pointer.c -o hello.exe && hello" */
+/* compile-command: "gcc function_pointer.c -o hello && hello" */
 /* End: */
