@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 // https://en.wikibooks.org/wiki/C_Programming/Pointers_and_arrays#sizeof
-#define NUM_ELEMENT(x) (sizeof(x) / sizeof(*(x)))
+#define NUM_ELEMENTS(x) (sizeof(x) / sizeof(*(x)))
 
 void print_string_with_length(char s[], size_t len) {
   for (int i = 0; i < len; ++i) {
@@ -10,8 +10,9 @@ void print_string_with_length(char s[], size_t len) {
 }
 
 void print_null_terminated_string(char s[]) {
-  for (int i = 0; s[i] != '\0'; ++i) {
-    printf("%c", s[i]);
+  while (*s != '\0') {
+    putchar(*s);
+    ++s;
   }
 }
 
@@ -26,7 +27,7 @@ void print_structured_string(my_str *s) {
 
 int main(void) {
   char s1[] = "hello";
-  print_string_with_length(s1, NUM_ELEMENT(s1) - 1);
+  print_string_with_length(s1, NUM_ELEMENTS(s1) - 1);
   printf("\n");
 
   char s2[10] = "world";
