@@ -52,6 +52,7 @@
 (tool-bar-mode -1)
 (column-number-mode 1)
 (setq-default word-wrap t)
+(setq-default compile-command "make")
 (setq confirm-kill-emacs 'yes-or-no-p)
 (setq eval-expression-print-length 1000)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -103,9 +104,9 @@
 (defun compile-now ()
   (interactive)
   (save-buffer)
-  (setq-default compile-command "make")
-  (setq-local compilation-read-command nil)
-  (call-interactively 'compile))
+  (let ((compilation-read-command nil)
+        (compilation-window-height 15))
+    (call-interactively 'compile)))
 
 (global-set-key (kbd "<f5>") 'compile-now)
 
