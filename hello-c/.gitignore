@@ -1,3 +1,5 @@
 # Binaries
 *.exe
 hello
+net_client
+net_server
