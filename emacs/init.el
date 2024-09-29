@@ -46,6 +46,11 @@
   (unless (executable-find "clang")
     (delete 'company-clang company-backends)))
 
+(use-package flycheck
+  :hook (prog-mode . flycheck-mode)
+  :config
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(background-color . "#FFFFDF"))
 ;; (menu-bar-mode -1)

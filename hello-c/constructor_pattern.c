@@ -62,7 +62,7 @@ int main(void) {
   destroy_widget(x);
 
   struct string *s = create_string("hello world");
-  printf("%s %d\n", s->data, s->size);
+  printf("%s %zu\n", s->data, s->size);
   free_string(&s);
 
   return 0;
