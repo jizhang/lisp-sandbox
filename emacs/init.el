@@ -56,6 +56,7 @@
 ;; (menu-bar-mode -1)
 (tool-bar-mode -1)
 (column-number-mode 1)
+(electric-pair-mode 1)
 (setq-default word-wrap t)
 (setq-default compile-command "make")
 (setq confirm-kill-emacs 'yes-or-no-p)
