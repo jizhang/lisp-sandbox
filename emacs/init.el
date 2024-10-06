@@ -6,6 +6,11 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+(use-package delight
+  :config
+  (delight '((eldoc-mode nil "eldoc")
+             (abbrev-mode " Abv" abbrev))))
+
 (use-package markdown-mode
   :init
   (progn
@@ -19,10 +24,12 @@
               ("C-c c" . calculate-calories)))
 
 (use-package editorconfig
-  :init (editorconfig-mode 1))
+  :init (editorconfig-mode 1)
+  :delight)
 
 (use-package helm
-  :init (helm-mode 1))
+  :init (helm-mode 1)
+  :delight)
 
 (use-package helm-gtags
   :if (executable-find "gtags")
@@ -38,13 +45,15 @@
               ("M-." . helm-gtags-dwim)
               ("M-," . helm-gtags-pop-stack)
               ("C-c <" . helm-gtags-previous-history)
-              ("C-c >" . helm-gtags-next-history)))
+              ("C-c >" . helm-gtags-next-history))
+  :delight)
 
 (use-package company
   :hook (prog-mode . company-mode)
   :config
   (unless (executable-find "clang")
-    (delete 'company-clang company-backends)))
+    (delete 'company-clang company-backends))
+  :delight)
 
 (use-package flycheck
   :hook (prog-mode . flycheck-mode)
@@ -121,7 +130,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(company helm-gtags editorconfig markdown-mode)))
+ '(package-selected-packages '(delight company helm-gtags editorconfig markdown-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
