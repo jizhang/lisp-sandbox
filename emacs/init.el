@@ -60,6 +60,8 @@
   :config
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
+(use-package cider)
+
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(background-color . "#FFFFDF"))
 ;; (menu-bar-mode -1)
@@ -130,7 +132,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(delight company helm-gtags editorconfig markdown-mode)))
+ '(package-selected-packages '(cider delight company helm-gtags editorconfig markdown-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
