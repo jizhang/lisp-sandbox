@@ -18,6 +18,23 @@ void shell_sort(int nums[], int len) {
   }
 }
 
+void quick_sort(int nums[], int left, int right) {
+  if (left >= right) {
+    return;
+  }
+
+  swap(nums, left, (left + right) / 2);
+  int last = left;
+  for (int i = left + 1; i <= right; ++i) {
+    if (nums[i] < nums[left]) {
+      swap(nums, ++last, i);
+    }
+  }
+  swap(nums, left, last);
+  quick_sort(nums, left, last - 1);
+  quick_sort(nums, last + 1, right);
+}
+
 void print_array(int nums[], int len) {
   printf("[");
   for (int i = 0; i < len; ++i) {
@@ -31,7 +48,8 @@ void print_array(int nums[], int len) {
 
 int main() {
   int nums[] = { 11, 8, 3, 9, 7, 1, 2, 5 };
-  shell_sort(nums, LEN(nums));
+  // shell_sort(nums, LEN(nums));
+  quick_sort(nums, 0, LEN(nums) - 1);
   print_array(nums, LEN(nums));
 }
 
