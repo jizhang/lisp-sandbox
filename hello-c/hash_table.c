@@ -70,15 +70,24 @@ struct nlist *install(char *name, char *defn) {
 }
 
 void undef(char *name) {
-  struct nlist *np = lookup(name);
-  if (np == NULL) {
-    return;
+  unsigned hashval = hash(name);
+  struct nlist *prev = NULL;
+  struct nlist *np = hashtab[hashval];
+  while (np != NULL) {
+    if (strcmp(name, np->name) == 0) {
+      if (prev == NULL) {
+        hashtab[hashval] = np->next;
+      } else {
+        prev->next = np->next;
+      }
+      free(np->name);
+      free(np->defn);
+      free(np);
+      return;
+    }
+    prev = np;
+    np = np->next;
   }
-
-  hashtab[hash(np->name)] = np->next;
-  free(np->name);
-  free(np->defn);
-  free(np);
 }
 
 /* Local Variables: */
