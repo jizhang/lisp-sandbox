@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 
 #define MAXWORD 100
-#define NKEYS (sizeof keytab / sizeof(keytab[0]))
+#define NKEYS (sizeof(keywords) / sizeof(*keywords))
 
 struct key {
   char *word;
@@ -11,29 +12,22 @@ struct key {
 };
 
 int getword(char *, int);
+struct key *generate_keytab();
 struct key *binsearch(char *, struct key *, int);
 
-struct key keytab[] = {
-  "break", 0,
-  "case", 0,
-  "char", 0,
-  "continue", 0,
-  "define", 0,
-  "do", 0,
-  "else", 0,
-  "for", 0,
-  "if", 0,
-  "include", 0,
-  "int", 0,
-  "return", 0,
-  "sizeof", 0,
-  "struct", 0,
-  "switch", 0,
-  "void", 0,
-  "while", 0
+char *keywords[] = {
+  "auto", "double", "int", "struct",
+  "break", "else", "long", "switch",
+  "case", "enum", "register", "typedef",
+  "char", "extern", "return", "union",
+  "const", "float", "short", "unsigned",
+  "continue", "for", "signed", "void",
+  "default", "goto", "sizeof", "volatile",
+  "do", "if", "static", "while"
 };
 
 int main() {
+  struct key *keytab = generate_keytab();
   char word[MAXWORD];
   while (getword(word, MAXWORD) != EOF) {
     if (isalpha(word[0])) {
@@ -53,6 +47,17 @@ int main() {
   return 0;
 }
 
+struct key *generate_keytab() {
+  struct key *keytab = calloc(NKEYS, sizeof(struct key));
+
+  for (int i = 0; i < NKEYS; ++i) {
+    keytab[i].word = keywords[i];
+    keytab[i].count = 0;
+  }
+
+  return keytab;
+}
+
 struct key *binsearch(char *word, struct key tab[], int n) {
   if (n == 0) return NULL;
 
@@ -70,5 +75,5 @@ struct key *binsearch(char *word, struct key tab[], int n) {
 }
 
 /* Local Variables: */
-/* compile-command: "gcc count_keywords.c getch.c -o hello && cat count_keywords.c | hello" */
+/* compile-command: "gcc count_keywords.c getch.c -o hello && cat count_keywords.c | ./hello" */
 /* End: */
