@@ -75,5 +75,5 @@ struct key *binsearch(char *word, struct key tab[], int n) {
 }
 
 /* Local Variables: */
-/* compile-command: "gcc count_keywords.c getch.c -o hello && cat count_keywords.c | ./hello" */
+/* compile-command: "gcc count_keywords.c getch.c -o hello && cat count_keywords.c | sh -c ./hello" */
 /* End: */
