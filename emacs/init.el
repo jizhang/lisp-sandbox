@@ -19,7 +19,7 @@
     (when (eq system-type 'windows-nt)
       (setq markdown-command-needs-filename t)))
   :bind (:map markdown-mode-map
-              ("C-c a" . bubble-region)
+              ("C-c a" . bubble-phrase)
               ("C-c d" . insert-date)
               ("C-c c" . calculate-calories)))
 
@@ -82,15 +82,36 @@
   (dolist (script '(symbol emoji))
     (set-fontset-font t script "Segoe UI Emoji")))
 
+(defun bubble-phrase ()
+  (interactive "*")
+  (if (use-region-p)
+      (bubble-region (region-beginning) (region-end))
+    (mark-phrase)
+    (bubble-region (region-beginning) (region-end))
+    (or (looking-at-p "\\s-") (insert-char ? ))
+    (beginning-of-line)
+    (push-mark)
+    (skip-chars-forward "[:blank:]")
+    (delete-region (region-beginning) (region-end))))
+
+(defun mark-phrase ()
+  (interactive)
+  (if (search-backward "," (pos-bol) t)
+      (forward-char)
+    (beginning-of-line))
+  (push-mark)
+  (if (search-forward "," (pos-eol) t)
+      (backward-char)
+    (end-of-line))
+  (when (string-blank-p (buffer-substring (region-beginning) (region-end)))
+    (error "Nothing to select"))
+  (forward-char)
+  (activate-mark))
+
 (defun bubble-region (beg end)
-  (interactive
-   (progn
-     (barf-if-buffer-read-only)
-     (if (use-region-p)
-         (list (region-beginning) (region-end))
-       (error "No active region"))))
+  (interactive "*r")
   (kill-region beg end)
-  (move-beginning-of-line 1)
+  (beginning-of-line)
   (yank))
 
 (defun insert-date (arg)
