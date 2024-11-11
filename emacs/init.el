@@ -112,7 +112,7 @@
 
 (defun mark-phrase-en ()
   (interactive "*")
-  (mark-phrase "[,]")
+  (mark-phrase "[,/]")
   (exchange-point-and-mark)
   (skip-chars-forward "[:blank:]")
   (exchange-point-and-mark)
@@ -121,7 +121,7 @@
 
 (defun mark-phrase-jp ()
   (interactive "*")
-  (mark-phrase "[[:blank:]]")
+  (mark-phrase "[[:blank:]/]")
   (ensure-string "　")
   (activate-mark))
 
