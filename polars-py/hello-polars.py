@@ -107,3 +107,12 @@ df3 = pl.DataFrame({
 })
 
 pl.concat([df, df3], how='vertical')
+
+# %%
+q = (
+     pl.scan_csv('data/iris.csv')
+     .filter(pl.col('sepal_length') > 5)
+     .group_by('species')
+     .agg(pl.col('sepal_width').mean())
+)
+print(q.explain())
