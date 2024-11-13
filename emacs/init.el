@@ -131,6 +131,12 @@
   (beginning-of-line)
   (yank))
 
+(defun replace-space ()
+  (interactive "*")
+  (beginning-of-line)
+  (while (search-forward " " (pos-eol) t)
+    (replace-match "　")))
+
 (defun insert-date (arg)
   (interactive "*P")
   (let* ((days (if (integerp arg) arg 0))
