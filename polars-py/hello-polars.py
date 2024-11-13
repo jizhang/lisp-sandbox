@@ -1,5 +1,7 @@
-import polars as pl
 import datetime as dt
+import numpy as np
+import polars as pl
+import polars.selectors as cs
 
 # %%
 df = pl.DataFrame({
@@ -116,3 +118,64 @@ q = (
      .agg(pl.col('sepal_width').mean())
 )
 print(q.explain())
+
+# %%
+np.random.seed(42)
+
+df = pl.DataFrame({
+    'nrs': [1, 2, 3, None, 5],
+    'names': ['foo', 'ham', 'spam', 'egg', 'spam'],
+    'random': np.random.rand(5),
+    'groups': ['A', 'A', 'B', 'A', 'B'],
+})
+
+df.select(
+    pl.col('names').unique(maintain_order=True).alias('name'),
+    pl.col('names').unique_counts().alias('count'),
+)
+
+# %%
+long_df = pl.DataFrame({'numbers': np.random.randint(0, 100_000, 100_000)})
+long_df.select(
+    pl.col('numbers').n_unique().alias('unique'), 
+    pl.col('numbers').approx_n_unique().alias('approx'),
+)
+
+# %%
+df = pl.DataFrame(
+    {  # As of 14th October 2024, ~3pm UTC
+        "ticker": ["AAPL", "NVDA", "MSFT", "GOOG", "AMZN"],
+        "company_name": ["Apple", "NVIDIA", "Microsoft", "Alphabet (Google)", "Amazon"],
+        "price": [229.9, 138.93, 420.56, 166.41, 188.4],
+        "day_high": [231.31, 139.6, 424.04, 167.62, 189.83],
+        "day_low": [228.6, 136.3, 417.52, 164.78, 188.44],
+        "year_high": [237.23, 140.76, 468.35, 193.31, 201.2],
+        "year_low": [164.08, 39.23, 324.39, 121.46, 118.35],
+    }
+)
+
+eur_usd_rate = 1.09  # As of 14th October 2024
+gbp_usd_rate = 1.31  # As of 14th October 2024
+
+df.with_columns((pl.col('price', '^.+_(low|high)$') / eur_usd_rate).round(2))
+
+# %%
+df.select(
+    (pl.col('^year_.+$') / eur_usd_rate).name.prefix('in_eur_'),
+    (pl.col('day_high', 'day_low') / gbp_usd_rate).name.suffix('_gbp'),
+)
+
+# %%
+def amplitude_expressions(time_periods):
+    for tp in time_periods:
+        yield (pl.col(f'{tp}_high') - pl.col(f'{tp}_low')).alias(f'{tp}_amplitude')
+        
+df.with_columns(amplitude_expressions(['day', 'year']))
+
+# %%
+print(cs.expand_selector(df, cs.ends_with('_high') | cs.ends_with('_low')))
+print(cs.expand_selector(df, cs.contains('_') - cs.string()))
+print(cs.is_selector(cs.contains('_')))
+print(cs.contains('_').as_expr())
+
+# %%
