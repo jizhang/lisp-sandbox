@@ -179,3 +179,44 @@ print(cs.is_selector(cs.contains('_')))
 print(cs.contains('_').as_expr())
 
 # %%
+weather = pl.DataFrame(
+    {
+        "station": [f"Station {idx}" for idx in range(1, 6)],
+        "temperatures": [
+            "20 5 5 E1 7 13 19 9 6 20",
+            "18 8 16 11 23 E2 8 E2 E2 E2 90 70 40",
+            "19 24 E9 16 6 12 10 22",
+            "E2 E0 15 7 8 10 E1 24 17 13 6",
+            "14 8 E0 16 22 24 E1",
+        ],
+    }
+)
+
+weather = weather.with_columns(pl.col('temperatures').str.split(' '))
+weather.with_columns(
+    pl.col('temperatures')
+    .list.eval(pl.element().cast(pl.Int32, strict=False).is_null())
+    .list.sum()
+    .alias('errors'),
+    pl.col('temperatures')
+    .list.eval(pl.element().str.contains('(?i)[a-z]'))
+    .list.sum()
+    .alias('errors_2'),
+)
+
+# %%
+weather_by_day = pl.DataFrame(
+    {
+        "station": [f"Station {idx}" for idx in range(1, 11)],
+        "day_1": [17, 11, 8, 22, 9, 21, 20, 8, 8, 17],
+        "day_2": [15, 11, 10, 8, 7, 14, 18, 21, 15, 13],
+        "day_3": [16, 15, 24, 24, 8, 23, 19, 23, 16, 10],
+    }
+)
+
+rank_pct = (pl.element().rank(descending=True) / pl.all().count()).round(2)
+weather_by_day.with_columns(
+    pl.concat_list(pl.all().exclude('station'))
+    .list.eval(rank_pct, parallel=True)
+    .alias('temps_rank'),
+)
