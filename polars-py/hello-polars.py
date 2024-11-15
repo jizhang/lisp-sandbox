@@ -220,3 +220,38 @@ weather_by_day.with_columns(
     .list.eval(rank_pct, parallel=True)
     .alias('temps_rank'),
 )
+
+# %%
+ratings = pl.DataFrame(
+    {
+        "Movie": ["Cars", "IT", "ET", "Cars", "Up", "IT", "Cars", "ET", "Up", "Cars"],
+        "Theatre": ["NE", "ME", "IL", "ND", "NE", "SD", "NE", "IL", "IL", "NE"],
+        "Avg_Rating": [4.5, 4.4, 4.6, 4.3, 4.8, 4.7, 4.5, 4.9, 4.7, 4.6],
+        "Count": [30, 27, 26, 29, 31, 28, 28, 26, 33, 28],
+    }
+)
+
+ratings.select(pl.col('Theatre').value_counts(sort=True)).unnest('Theatre')
+
+# %%
+rating_series = pl.Series(
+    "ratings",
+    [
+        {"Movie": "Cars", "Theatre": "NE", "Avg_Rating": 4.5},
+        {"Movie": "Toy Story", "Theatre": "ME", "Avg_Rating": 4.9},
+    ],
+)
+
+rating_series.struct.rename_fields(['Film', 'State', 'Value']) \
+    .to_frame().unnest('ratings')
+    
+# %%
+(
+    ratings.filter(pl.struct('Movie', 'Theatre').is_duplicated())
+    .with_columns(
+        pl.struct('Count', 'Avg_Rating')
+        .rank('dense', descending=True)
+        .over('Movie', 'Theatre')
+        .alias('Rank')
+    )
+)
