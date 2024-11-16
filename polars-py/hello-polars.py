@@ -255,3 +255,66 @@ rating_series.struct.rename_fields(['Film', 'State', 'Value']) \
         .alias('Rank')
     )
 )
+
+# %%
+df = pl.DataFrame({'value': [1.0, 2, float('nan')]})
+df.select(pl.col('value').fill_nan(None).mean())
+
+# %%
+df = pl.read_csv('data/legislators-historical.csv', schema_overrides={
+    "first_name": pl.Categorical,
+    "gender": pl.Categorical,
+    "type": pl.Categorical,
+    "state": pl.Categorical,
+    "party": pl.Categorical,
+})
+df = df.with_columns(pl.col('birthday').str.to_date(strict=False))
+
+# %%
+(
+    df.lazy()
+    .group_by('first_name')
+    .agg(
+        pl.len(),
+        pl.col('gender'),
+        pl.first('last_name'),
+    )
+    .sort('len', descending=True)
+    .limit(5)
+    .collect()
+)
+
+# %%
+(
+    df.lazy()
+    .group_by(pl.col('state'))
+    .agg(
+        (pl.col('party') == 'Pro-Administration').sum().alias('pro'),
+        (pl.col('party') == 'Anti-Administration').sum().alias('anti'),
+    )
+    .sort('pro', descending=True)
+    .limit(5)
+    .collect()
+)
+
+# %%
+def avg_birthday(gender):
+    return (
+        (dt.date.today().year - pl.col('birthday').dt.year())
+        .filter(pl.col('gender') == gender)
+        .mean()
+        .alias(f'avg {gender} birthday')
+    )
+
+(
+    df.lazy()
+    .group_by('state')
+    .agg(
+        avg_birthday('M'),
+        avg_birthday('F'),
+        (pl.col('gender') == 'M').sum().alias('# male'),
+        (pl.col('gender') == 'F').sum().alias('# female'),
+    )
+    .filter(pl.col('state').is_in(['IL', 'MA', 'NH', 'SD', 'SC']))
+    .collect()
+)
