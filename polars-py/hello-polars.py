@@ -169,7 +169,8 @@ df.select(
 def amplitude_expressions(time_periods):
     for tp in time_periods:
         yield (pl.col(f'{tp}_high') - pl.col(f'{tp}_low')).alias(f'{tp}_amplitude')
-        
+
+
 df.with_columns(amplitude_expressions(['day', 'year']))
 
 # %%
@@ -298,13 +299,18 @@ df = df.with_columns(pl.col('birthday').str.to_date(strict=False))
 )
 
 # %%
+def compute_age():
+    return dt.date.today().year - pl.col('birthday').dt.year()
+
+
 def avg_birthday(gender):
     return (
-        (dt.date.today().year - pl.col('birthday').dt.year())
+        compute_age()
         .filter(pl.col('gender') == gender)
         .mean()
         .alias(f'avg {gender} birthday')
     )
+
 
 (
     df.lazy()
@@ -317,4 +323,121 @@ def avg_birthday(gender):
     )
     .filter(pl.col('state').is_in(['IL', 'MA', 'NH', 'SD', 'SC']))
     .collect()
+)
+
+# %%
+(
+    df.lazy()
+    .filter((pl.col('party') == 'Pro-Administration') | (pl.col('party') == 'Anti-Administration'))
+    .group_by('state', 'party')
+    .agg(pl.len().alias('count'))
+    .sort('count', descending=True)
+    .limit(5)
+    .collect()
+)
+
+# %%
+(
+    df.lazy()
+    .group_by('state', 'gender')
+    .agg(
+        compute_age().mean().alias('avg birthday'),
+        pl.len().alias('#'),
+    )
+    .sort('#', descending=True)
+    .limit(5)
+    .collect()
+)
+
+# %%
+def get_name():
+    return pl.col('first_name') + pl.lit(' ') + pl.col('last_name')
+
+
+(
+    df.lazy()
+    .sort('birthday', descending=True)
+    .group_by('state')
+    .agg(
+        get_name().first().alias('youngest'),
+        get_name().last().alias('oldest'),
+        get_name().sort().first().alias('alphabetical_first'),
+        pl.col('gender').sort_by(get_name()).first(),
+    )
+    .limit(5)
+    .collect()
+)
+
+# %%
+types = (
+    "Grass Water Fire Normal Ground Electric Psychic Fighting Bug Steel "
+    "Flying Dragon Dark Ghost Poison Rock Ice Fairy".split()
+)
+type_enum = pl.Enum(types)
+df = pl.read_csv("data/pokemon.csv").cast({"Type 1": type_enum, "Type 2": type_enum})
+df
+
+# %%
+df.select(
+    pl.col('Name', 'Type 1'),
+    pl.col('Speed').rank('dense', descending=True).over('Type 1').alias('Speed rank'),
+)
+
+# %%
+(
+    df.lazy()
+    .group_by('Type 1')
+    .agg(
+        pl.col('Name'),
+        pl.col('Speed').rank('dense', descending=True).alias('Speed rank'),
+    )
+    .explode('Name', 'Speed rank')
+    .collect()
+)
+
+# %%
+df.select(
+    pl.col('Name', 'Type 1', 'Speed'),
+    pl.col('Speed').mean().over('Type 1').alias('Mean speed in group'),
+)
+
+# %%
+(
+   df.lazy()
+   .sort('Type 1')
+   .select(
+       pl.col('Type 1').head(3).over('Type 1', mapping_strategy='explode'),
+       
+       pl.col('Name')
+       .sort_by('Speed', descending=True)
+       .head(3)
+       .over('Type 1', mapping_strategy='explode')
+       .alias('fastest/group'),
+       
+       pl.col('Name')
+       .sort_by('Attack', descending=True)
+       .head(3)
+       .over('Type 1', mapping_strategy='explode')
+       .alias('strongest/group'),
+       
+       pl.col('Name')
+       .sort()
+       .head(3)
+       .over('Type 1', mapping_strategy='explode')
+       .alias('sorted_by_alphabet'),
+    )
+   .collect()
+)
+
+# %%
+df = pl.DataFrame({
+    'athlete': ['A', 'B', 'C', 'D', 'E', 'F'],
+    'country': ['PT', 'NL', 'NL', 'PT', 'PT', 'NL'],
+    'rank': [6, 1, 5, 4, 2, 3],
+})
+
+df.select(
+    pl.all()
+    .sort_by('rank')
+    .over('country', mapping_strategy='explode')
 )
