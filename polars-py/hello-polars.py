@@ -1,3 +1,4 @@
+import operator
 import datetime as dt
 import numpy as np
 import polars as pl
@@ -441,3 +442,129 @@ df.select(
     .sort_by('rank')
     .over('country', mapping_strategy='explode')
 )
+
+# %%
+df = pl.DataFrame(
+    {
+        "label": ["foo", "bar", "spam"],
+        "a": [1, 2, 3],
+        "b": [10, 20, 30],
+    }
+)
+
+df.select(
+    pl.fold(
+        acc=pl.lit(0),
+        function=operator.add,
+        exprs=pl.col('a', 'b'),
+    ).alias('sum_fold'),
+    pl.sum_horizontal('a', 'b').alias('sum_horz'),
+    (pl.col('a') + pl.col('b')).alias('sum_expr'),
+)
+
+# %%
+df = pl.DataFrame(
+    {
+        "a": [1, 2, 3],
+        "b": [0, 1, 2],
+    }
+)
+
+df.filter(pl.fold(acc=pl.lit(True), function=lambda acc, x: acc & x, exprs=pl.all() > 1))
+
+# %%
+df = pl.DataFrame(
+    {
+        "a": ["a", "b", "c"],
+        "b": [1, 2, 3],
+    }
+)
+
+df.select(pl.concat_str('a', 'b'))
+
+# %%
+df = pl.DataFrame(
+    {
+        "keys": ["a", "a", "b", "b"],
+        "values": [10, 7, 1, 23],
+    }
+)
+
+# %%
+def diff_from_mean(series):
+    mean = sum(series) / len(series)
+    return pl.Series([value - mean for value in series])
+
+
+df.select(pl.col('values').map_batches(diff_from_mean))
+
+# %%
+df.group_by('keys').agg(pl.col('values').map_batches(diff_from_mean))
+
+# %%
+df_props = pl.DataFrame({
+    'property_name': ['Old Ken Road', 'Whitechapel Road', 'The Shire', 'Kings Cross Station', 'The Angel, Islington'],
+    'group': ['brown', 'brown', 'fantasy', 'stations', 'light_blue'],
+})
+
+df_prices = pl.DataFrame({
+    'property_name': ['Old Ken Road', 'Whitechapel Road', 'Sesame Street', 'Kings Cross Station', 'The Angel, Islington'],
+    'cost': [60, 60, 100, 200, 100],
+})
+
+df_props.join(df_prices, on='property_name', how='full', coalesce=True)
+
+# %%
+(
+    df_props
+    .with_columns(pl.col('property_name').str.to_lowercase())
+    .join(
+        df_prices.select(
+            pl.col('property_name').alias('name'), 
+            pl.col('cost'),
+        ),
+        left_on='property_name',
+        right_on=pl.col('name').str.to_lowercase(),
+    )
+)
+
+# %%
+df_players = pl.DataFrame({
+    'name': ['Alice', 'Bob'],
+    'cash': [78, 135],
+})
+
+df_players.join_where(df_prices, pl.col('cash') > pl.col('cost'))
+
+# %%
+df_trades = pl.DataFrame(
+    {
+        "time": [
+            dt.datetime(2020, 1, 1, 9, 1, 0),
+            dt.datetime(2020, 1, 1, 9, 1, 0),
+            dt.datetime(2020, 1, 1, 9, 3, 0),
+            dt.datetime(2020, 1, 1, 9, 6, 0),
+        ],
+        "stock": ["A", "B", "B", "C"],
+        "trade": [101, 299, 301, 500],
+    }
+)
+
+df_quotes = pl.DataFrame(
+    {
+        "time": [
+            dt.datetime(2020, 1, 1, 9, 0, 0),
+            dt.datetime(2020, 1, 1, 9, 2, 0),
+            dt.datetime(2020, 1, 1, 9, 4, 0),
+            dt.datetime(2020, 1, 1, 9, 6, 0),
+        ],
+        "stock": ["A", "B", "C", "A"],
+        "quote": [100, 300, 501, 102],
+    }
+)
+
+df_trades.join_asof(df_quotes, on='time', by='stock', strategy='backward', tolerance='1m')
+
+# %%
+tokens = pl.DataFrame({"monopoly_token": ["hat", "shoe", "boat"]})
+df_players.select(pl.col('name')).join(tokens, how='cross')
