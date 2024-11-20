@@ -582,10 +582,6 @@ df1 = df.pivot('bar', index='foo', values='N', aggregate_function='first')
 df1.unpivot(list('klmno'), index='foo').filter(pl.col('value').is_not_null())
 
 # %%
-df = pl.read_csv('data/apple_stock.csv', try_parse_dates=True)
-df
-
-# %%
 data = [
     "2021-03-27T00:00:00+0100",
     "2021-03-28T00:00:00+0100",
@@ -606,3 +602,51 @@ df = pl.DataFrame({
 })
 df = df.with_columns(pl.col('ts').str.to_date())
 df.filter(pl.col('ts').dt.year() < -1300)
+
+# %%
+df = pl.read_csv('data/apple_stock.csv', try_parse_dates=True)
+df = df.sort('Date')
+(
+    df.group_by_dynamic('Date', every='1y')
+    .agg(pl.col('Close').mean())
+    .select(
+        pl.col('Date').dt.year().alias('Year'), 
+        pl.col('Close'),
+    )
+)
+
+# %%
+df = (
+    pl.date_range(
+        start=dt.date(2021, 1, 1),
+        end=dt.date(2021, 12, 31),
+        interval='1d',
+        eager=True,
+    )
+    .alias('time')
+    .to_frame()
+)
+
+(
+    df.group_by_dynamic('time', every='1mo')
+    .agg(
+        pl.col('time').cum_count().reverse().head(3).alias('days/eom'),
+        ((pl.col('time') - pl.col('time').first()).last().dt.total_days() + 1).alias('days_in_month'),
+    )
+)
+
+# %%
+df = pl.DataFrame(
+    {
+        "time": pl.datetime_range(
+            start=dt.datetime(2021, 12, 16),
+            end=dt.datetime(2021, 12, 16, 3),
+            interval="30m",
+            eager=True,
+        ),
+        "groups": ["a", "a", "a", "b", "b", "a", "a"],
+        "values": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0],
+    }
+)
+
+df.upsample(time_column='time', every='15m').interpolate().fill_null(strategy='forward')
