@@ -568,3 +568,41 @@ df_trades.join_asof(df_quotes, on='time', by='stock', strategy='backward', toler
 # %%
 tokens = pl.DataFrame({"monopoly_token": ["hat", "shoe", "boat"]})
 df_players.select(pl.col('name')).join(tokens, how='cross')
+
+# %%
+df = pl.DataFrame(
+    {
+        "foo": ["A", "A", "B", "B", "C"],
+        "N": [1, 2, 2, 4, 2],
+        "bar": ["k", "l", "m", "n", "o"],
+    }
+)
+
+df1 = df.pivot('bar', index='foo', values='N', aggregate_function='first')
+df1.unpivot(list('klmno'), index='foo').filter(pl.col('value').is_not_null())
+
+# %%
+df = pl.read_csv('data/apple_stock.csv', try_parse_dates=True)
+df
+
+# %%
+data = [
+    "2021-03-27T00:00:00+0100",
+    "2021-03-28T00:00:00+0100",
+    "2021-03-29T00:00:00+0200",
+    "2021-03-30T00:00:00+0200",
+]
+
+(
+    pl.Series(data)
+    .str.to_datetime('%Y-%m-%dT%H:%M:%S%z')
+    .dt.convert_time_zone('Europe/Brussels')
+)
+
+# %%
+df = pl.DataFrame({
+    'ts': ['-1300-05-23', '-1400-03-02'],
+    'values': [3, 4],
+})
+df = df.with_columns(pl.col('ts').str.to_date())
+df.filter(pl.col('ts').dt.year() < -1300)
