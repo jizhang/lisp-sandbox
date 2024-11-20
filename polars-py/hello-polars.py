@@ -650,3 +650,12 @@ df = pl.DataFrame(
 )
 
 df.upsample(time_column='time', every='15m').interpolate().fill_null(strategy='forward')
+
+# %%
+q1 = (
+    pl.scan_csv('data/reddit.csv')
+    .with_columns(pl.col('name').str.to_uppercase())
+    .filter(pl.col('comment_karma') > 0)
+)
+
+print(q1.explain(optimized=True))
