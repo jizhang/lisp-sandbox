@@ -166,9 +166,12 @@
 (defun compile-now ()
   (interactive)
   (save-buffer)
-  (let ((compilation-read-command nil)
-        (compilation-window-height 15))
-    (call-interactively 'compile)))
+  (cond ((derived-mode-p 'rust-mode)
+         (rust-run))
+        (t
+         (let ((compilation-read-command nil)
+               (compilation-window-height 15))
+           (call-interactively 'compile)))))
 
 (global-set-key (kbd "<f5>") 'compile-now)
 
