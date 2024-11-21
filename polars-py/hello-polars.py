@@ -3,6 +3,9 @@ import datetime as dt
 import numpy as np
 import polars as pl
 import polars.selectors as cs
+import altair as alt
+
+alt.renderers.enable('png')
 
 # %%
 df = pl.DataFrame({
@@ -49,7 +52,7 @@ df.filter(pl.col('birthdate').dt.year() < 1990)
 # %%
 df.filter(
     pl.col('birthdate').is_between(dt.date(1982, 12, 31), dt.date(1996, 1, 1)),
-    pl.col('height') > 1.7,    
+    pl.col('height') > 1.7,
 )
 
 # %%
@@ -138,7 +141,7 @@ df.select(
 # %%
 long_df = pl.DataFrame({'numbers': np.random.randint(0, 100_000, 100_000)})
 long_df.select(
-    pl.col('numbers').n_unique().alias('unique'), 
+    pl.col('numbers').n_unique().alias('unique'),
     pl.col('numbers').approx_n_unique().alias('approx'),
 )
 
@@ -246,7 +249,7 @@ rating_series = pl.Series(
 
 rating_series.struct.rename_fields(['Film', 'State', 'Value']) \
     .to_frame().unnest('ratings')
-    
+
 # %%
 (
     ratings.filter(pl.struct('Movie', 'Theatre').is_duplicated())
@@ -375,7 +378,8 @@ types = (
     "Flying Dragon Dark Ghost Poison Rock Ice Fairy".split()
 )
 type_enum = pl.Enum(types)
-df = pl.read_csv("data/pokemon.csv").cast({"Type 1": type_enum, "Type 2": type_enum})
+df_pokemon = pl.read_csv("data/pokemon.csv").cast({"Type 1": type_enum, "Type 2": type_enum})
+df = df_pokemon.clone()
 df
 
 # %%
@@ -408,19 +412,19 @@ df.select(
    .sort('Type 1')
    .select(
        pl.col('Type 1').head(3).over('Type 1', mapping_strategy='explode'),
-       
+
        pl.col('Name')
        .sort_by('Speed', descending=True)
        .head(3)
        .over('Type 1', mapping_strategy='explode')
        .alias('fastest/group'),
-       
+
        pl.col('Name')
        .sort_by('Attack', descending=True)
        .head(3)
        .over('Type 1', mapping_strategy='explode')
        .alias('strongest/group'),
-       
+
        pl.col('Name')
        .sort()
        .head(3)
@@ -520,7 +524,7 @@ df_props.join(df_prices, on='property_name', how='full', coalesce=True)
     .with_columns(pl.col('property_name').str.to_lowercase())
     .join(
         df_prices.select(
-            pl.col('property_name').alias('name'), 
+            pl.col('property_name').alias('name'),
             pl.col('cost'),
         ),
         left_on='property_name',
@@ -610,7 +614,7 @@ df = df.sort('Date')
     df.group_by_dynamic('Date', every='1y')
     .agg(pl.col('Close').mean())
     .select(
-        pl.col('Date').dt.year().alias('Year'), 
+        pl.col('Date').dt.year().alias('Year'),
         pl.col('Close'),
     )
 )
@@ -659,3 +663,23 @@ q1 = (
 )
 
 print(q1.explain(optimized=True))
+
+with pl.Config(tbl_rows=100):
+    print(q1.collect())
+
+# %%
+with pl.SQLContext(pokemon=df_pokemon, eager=True) as ctx:
+    df = ctx.execute('SELECT * FROM pokemon LIMIT 5')
+    print(df)
+
+# %%
+(
+    pl.read_csv('data/iris.csv').plot
+    .point(
+        x="sepal_length",
+        y="sepal_width",
+        color="species",
+    )
+    .properties(width=500)
+    .configure_scale(zero=False)
+)
