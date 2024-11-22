@@ -27,26 +27,19 @@
   :init (editorconfig-mode 1)
   :delight)
 
-(use-package helm
-  :init (helm-mode 1)
-  :delight)
+(use-package vertico
+  :init (vertico-mode 1))
 
-(use-package helm-gtags
-  :if (executable-find "gtags")
-  :init
-  (setq
-    helm-gtags-ignore-case t
-    helm-gtags-auto-update t
-    helm-gtags-prefix-key "\C-cg"
-    helm-gtags-suggested-key-mapping t)
-  :hook ((c-mode java-mode) . helm-gtags-mode)
-  :bind (:map helm-gtags-mode-map
-              ("C-j" . helm-gtags-select)
-              ("M-." . helm-gtags-dwim)
-              ("M-," . helm-gtags-pop-stack)
-              ("C-c <" . helm-gtags-previous-history)
-              ("C-c >" . helm-gtags-next-history))
-  :delight)
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+
+(use-package marginalia
+  :init (marginalia-mode 1))
+
+(use-package savehist
+  :init (savehist-mode 1))
 
 (use-package company
   :hook (prog-mode . company-mode)
@@ -180,8 +173,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(rust-mode delight company helm-gtags editorconfig markdown-mode)))
+ '(package-selected-packages '(rust-mode delight company editorconfig markdown-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
