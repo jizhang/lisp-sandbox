@@ -12,12 +12,9 @@
              (abbrev-mode " Abv" abbrev))))
 
 (use-package markdown-mode
-  :init
-  (progn
-    (setq markdown-command '("pandoc" "--embed-resources" "--standalone"
-                             "--shift-heading-level-by=-1"))
-    (when (eq system-type 'windows-nt)
-      (setq markdown-command-needs-filename t)))
+  :custom
+  (markdown-command '("pandoc" "--embed-resources" "--standalone" "--shift-heading-level-by=-1"))
+  (markdown-command-needs-filename (eq system-type 'windows-nt))
   :bind (:map markdown-mode-map
               ("C-c a" . bubble-phrase)
               ("C-c d" . insert-date)
@@ -50,8 +47,8 @@
 
 (use-package flycheck
   :hook ((emacs-lisp-mode c-mode) . flycheck-mode)
-  :config
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+  :custom
+  (flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
 (use-package rust-mode
   :if (executable-find "rustc"))
@@ -63,6 +60,13 @@
   :custom
   (eglot-autoshutdown t))
 
+(use-package compile
+  :bind (("<f5>" . compile-now))
+  :custom
+  (compile-command "make ")
+  (compilation-read-command nil)
+  (compilation-window-height 15))
+
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(background-color . "#FFFFDF"))
 ;; (menu-bar-mode -1)
@@ -70,7 +74,6 @@
 (column-number-mode 1)
 (electric-pair-mode 1)
 (setq-default word-wrap t)
-(setq-default compile-command "make")
 (setq confirm-kill-emacs 'yes-or-no-p)
 (setq eval-expression-print-length 1000)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -166,14 +169,8 @@
 (defun compile-now ()
   (interactive)
   (save-buffer)
-  (cond ((derived-mode-p 'rust-mode)
-         (rust-run))
-        (t
-         (let ((compilation-read-command nil)
-               (compilation-window-height 15))
-           (call-interactively 'compile)))))
-
-(global-set-key (kbd "<f5>") 'compile-now)
+  (cond ((derived-mode-p 'rust-mode) (rust-run))
+        (t (call-interactively 'compile))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
