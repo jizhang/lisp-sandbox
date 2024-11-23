@@ -49,12 +49,19 @@
   :delight)
 
 (use-package flycheck
-  :hook (prog-mode . flycheck-mode)
+  :hook ((emacs-lisp-mode c-mode) . flycheck-mode)
   :config
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
 (use-package rust-mode
   :if (executable-find "rustc"))
+
+(use-package eglot
+  :init
+  (when (executable-find "rust-analyzer")
+    (add-hook 'rust-mode-hook 'eglot-ensure))
+  :custom
+  (eglot-autoshutdown t))
 
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(background-color . "#FFFFDF"))
