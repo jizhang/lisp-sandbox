@@ -45,10 +45,13 @@
     (delete 'company-clang company-backends))
   :delight)
 
-(use-package flycheck
-  :hook ((emacs-lisp-mode c-mode) . flycheck-mode)
-  :custom
-  (flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+(use-package flymake
+  :hook (c-mode . flymake-mode)
+  :init
+  (add-hook 'emacs-lisp-mode-hook
+            (lambda ()
+              (remove-hook 'flymake-diagnostic-functions #'elisp-flymake-checkdoc t)
+              (flymake-mode 1))))
 
 (use-package rust-mode
   :if (executable-find "rustc"))
