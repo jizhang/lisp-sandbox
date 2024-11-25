@@ -46,12 +46,10 @@
   :delight)
 
 (use-package flymake
-  :hook (c-mode . flymake-mode)
-  :init
-  (add-hook 'emacs-lisp-mode-hook
-            (lambda ()
-              (remove-hook 'flymake-diagnostic-functions #'elisp-flymake-checkdoc t)
-              (flymake-mode 1))))
+  :hook ((c-mode . flymake-mode)
+         (emacs-lisp-mode . enable-flymake-el))
+  :config
+  (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake))
 
 (use-package rust-mode
   :if (executable-find "rustc"))
@@ -174,6 +172,10 @@
   (save-buffer)
   (cond ((derived-mode-p 'rust-mode) (rust-run))
         (t (call-interactively 'compile))))
+
+(defun enable-flymake-el ()
+  (remove-hook 'flymake-diagnostic-functions #'elisp-flymake-checkdoc t)
+  (flymake-mode 1))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
