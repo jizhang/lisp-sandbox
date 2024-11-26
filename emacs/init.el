@@ -49,7 +49,12 @@
   :hook ((c-mode . flymake-mode)
          (emacs-lisp-mode . enable-flymake-el))
   :config
-  (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake))
+  (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake)
+  :bind (:map flymake-mode-map
+              ("C-c f l" . flymake-show-buffer-diagnostics)
+              ("C-c f a" . flymake-show-project-diagnostics)
+              ("C-c f n" . flymake-goto-next-error)
+              ("C-c f p" . flymake-goto-prev-error)))
 
 (use-package rust-mode
   :if (executable-find "rustc"))
