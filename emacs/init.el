@@ -6,6 +6,11 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+;; https://github.com/d12frosted/homebrew-emacs-plus/issues/720
+(use-package exec-path-from-shell
+  :if (eq system-type 'darwin)
+  :init (exec-path-from-shell-initialize))
+
 (use-package delight
   :config
   (delight '((eldoc-mode nil "eldoc")
@@ -187,7 +192,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(rust-mode delight company editorconfig markdown-mode)))
+ '(package-selected-packages
+   '(exec-path-from-shell rust-mode delight company editorconfig markdown-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

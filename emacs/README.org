@@ -1,0 +1,10 @@
+#+title: Emacs configuration
+
+* Installation
+
+** macOS
+- https://github.com/d12frosted/homebrew-emacs-plus
+- [[https://forums.macrumors.com/threads/finder-does-not-have-permission-to-open-null.2441374/post-33535657][Sign the app]]:
+  #+begin_src
+  codesign --force --deep --sign - /usr/local/opt/emacs-plus/Emacs.app
+  #+end_src
