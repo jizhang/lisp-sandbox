@@ -181,6 +181,7 @@
   (interactive)
   (save-buffer)
   (cond ((derived-mode-p 'rust-mode) (rust-run))
+        ((derived-mode-p 'emacs-lisp-mode) (eval-buffer))
         (t (call-interactively 'compile))))
 
 (defun enable-flymake-el ()

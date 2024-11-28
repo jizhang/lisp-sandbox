@@ -1,0 +1,43 @@
+(defun halve (n) (/ n 2))
+
+(defun merge-sort (nums p r)
+  (when (< p r)
+    (let ((q (+ p (halve (- r p)))))
+      (merge-sort nums p q)
+      (merge-sort nums (1+ q) r)
+      (merge nums p q r))))
+
+(defun merge (nums p q r)
+  (let ((tmp (make-vector (1+ (- r p)) 0))
+        (i p)
+        (j (1+ q))
+        (k 0))
+    (while (and (<= i q) (<= j r))
+      (let ((a (aref nums i))
+            (b (aref nums j)))
+        (cond ((<= a b)
+               (aset tmp k a)
+               (setq i (1+ i)))
+              (t
+               (aset tmp k b)
+               (setq j (1+ j)))))
+      (setq k (1+ k)))
+
+    (while (<= i q)
+      (aset tmp k (aref nums i))
+      (setq i (1+ i)
+            k (1+ k)))
+
+    (while (<= j r)
+      (aset tmp k (aref nums j))
+      (setq j (1+ j)
+            k (1+ k)))
+
+    (setq k 0)
+    (while (< k (length tmp))
+      (aset nums (+ p k) (aref tmp k))
+      (setq k (1+ k)))))
+
+(let ((nums (vector 11 8 3 9 7 1 2 5)))
+  (merge-sort nums 0 (1- (length nums)))
+  (princ nums t))
