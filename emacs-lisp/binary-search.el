@@ -1,0 +1,17 @@
+(defun binary-search (nums target)
+  (let ((low 0)
+        (high (1- (length nums)))
+        (result -1))
+    (while (and (<= low high) (= result -1))
+      (let* ((mid (+ low (/ (- high low) 2)))
+             (mid-value (aref nums mid)))
+        (cond ((< target mid-value)
+               (setq high (1- mid)))
+              ((> target mid-value)
+               (setq low (1+ mid)))
+              (t
+               (setq result mid)))))
+    result))
+
+(let ((nums [-1 0 3 5 9 12]))
+  (princ (binary-search nums 9) t))
