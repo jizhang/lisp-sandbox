@@ -1,3 +1,5 @@
+(require 'cl-lib)
+
 (defun reverse-list (head)
   (let ((prev nil)
         (current head))
@@ -29,6 +31,25 @@
       (setcdr head nil)
       rest)))
 
+(defun reverse-list-iter (result rest)
+  "`(reverse-list nil head)'"
+  (if (null rest)
+      result
+    (reverse-list-iter (cons (car rest) result) (cdr rest))))
+
+(defun reverse-list-reduce (head)
+  (cl-reduce
+   (lambda (result item) (cons item result))
+   head
+   :initial-value nil))
+
+(defun reverse-list-reduce-right (head)
+  (cl-reduce
+   (lambda (item result) (append result (list item)))
+   head
+   :initial-value nil
+   :from-end t))
+
 (let* ((head (list 1 2 3 4 5))
-       (result (reverse-list head)))
+       (result (reverse-list-reduce-right head)))
   (princ result t))
