@@ -1,20 +1,11 @@
 (defun make-dnode (value &optional previous next)
   (record 'dlist-node value previous next))
 
-(defun set-previous-dnode (dnode previous)
-  (aset dnode 2 previous))
-
-(defun set-next-dnode (dnode next)
-  (aset dnode 3 next))
-
-(defun dnode-value (dnode)
-  (aref dnode 1))
-
-(defun previous-dnode (dnode)
-  (aref dnode 2))
-
-(defun next-dnode (dnode)
-  (aref dnode 3))
+(defun set-previous-dnode (dnode previous) (aset dnode 2 previous))
+(defun set-next-dnode (dnode next) (aset dnode 3 next))
+(defun dnode-value (dnode) (aref dnode 1))
+(defun previous-dnode (dnode) (aref dnode 2))
+(defun next-dnode (dnode) (aref dnode 3))
 
 (defun make-dlist ()
   (let* ((head (make-dnode 0))
@@ -22,11 +13,8 @@
     (set-next-dnode head tail)
     (record 'dlist head tail)))
 
-(defun dlist-head (dlist)
-  (aref dlist 1))
-
-(defun dlist-tail (dlist)
-  (aref dlist 2))
+(defun dlist-head (dlist) (aref dlist 1))
+(defun dlist-tail (dlist) (aref dlist 2))
 
 (defun add-to-dlist (dlist element)
   "Append to the end."
@@ -47,6 +35,12 @@
       (set-previous-dnode next head))
     (dnode-value node)))
 
+(defun clear-dlist (dlist)
+  (let ((head (dlist-head dlist))
+        (tail (dlist-tail dlist)))
+    (set-next-dnode head tail)
+    (set-previous-dnode tail head)))
+
 (defun dlist-as-list (dlist)
   (let* ((head (dlist-head dlist))
          (tail (dlist-tail dlist))
@@ -64,9 +58,9 @@
   (add-to-dlist dlist 3)
   (princ (dlist-as-list dlist) t))
 
+(provide 'doubly-linked-list)
+
 ;; TODO
 ;; Add and remove by index.
-;; Clear.
-;; Unit tests.
 ;; Method dispatch.
 ;; Use `cl-defstruct' or `defclass'.

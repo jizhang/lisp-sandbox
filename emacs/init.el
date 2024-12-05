@@ -78,6 +78,9 @@
   (compilation-read-command nil)
   (compilation-window-height 15))
 
+(use-package ert
+  :bind (("<f6>" . ert-silently)))
+
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(background-color . "#FFFFDF"))
 ;; (menu-bar-mode -1)
@@ -187,6 +190,15 @@
 (defun enable-flymake-el ()
   (remove-hook 'flymake-diagnostic-functions #'elisp-flymake-checkdoc t)
   (flymake-mode 1))
+
+(defun ert-silently (arg)
+  (interactive "P")
+  (when (derived-mode-p 'emacs-lisp-mode)
+    (save-buffer)
+    (eval-buffer))
+  (if (consp arg)
+      (call-interactively 'ert)
+    (ert t)))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
