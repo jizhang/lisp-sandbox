@@ -17,35 +17,35 @@
 
 (ert-deftest dlist-test-add-at ()
   (let ((dlist (make-dlist)))
-    (add-to-dlist-at dlist 0 1)
+    (add-first-to-dlist dlist 1)
     (should (equal (dlist-as-list dlist) '(1)))
 
-    (add-to-dlist-at dlist 0 2)
+    (add-first-to-dlist dlist 2)
     (should (equal (dlist-as-list dlist) '(2 1)))
 
-    (add-to-dlist-at dlist 1 3)
+    (add-to-dlist-at dlist 3 1)
     (should (equal (dlist-as-list dlist) '(2 3 1)))
 
-    (add-to-dlist-at dlist 3 4)
+    (add-to-dlist-at dlist 4 3)
     (should (equal (dlist-as-list dlist) '(2 3 1 4)))
 
     (let ((message "Index out of bounds"))
-      (assert-error (add-to-dlist-at dlist -1 99) message)
-      (assert-error (add-to-dlist-at dlist 5 99) message))))
+      (assert-error (add-to-dlist-at dlist 99 -1) message)
+      (assert-error (add-to-dlist-at dlist 99 5) message))))
 
 (ert-deftest dlist-test-remove-at ()
   (let ((dlist (make-dlist))
         (no-such-element "No such element"))
-    (assert-error (remove-from-dlist-at dlist 0) no-such-element)
+    (assert-error (remove-from-dlist dlist) no-such-element)
 
     (add-to-dlist dlist 1)
     (add-to-dlist dlist 2)
-    (should (equal (remove-from-dlist-at dlist 0) 1))
+    (should (equal (remove-from-dlist dlist) 1))
     (should (equal (dlist-as-list dlist) '(2)))
 
     (add-to-dlist dlist 3)
     (add-to-dlist dlist 4)
-    (should (equal (remove-from-dlist-at dlist 0) 2))
+    (should (equal (remove-from-dlist dlist) 2))
     (should (equal (dlist-as-list dlist) '(3 4)))
 
     (add-to-dlist dlist 5)
@@ -58,6 +58,25 @@
 
     (remove-from-dlist dlist)
     (assert-error (remove-from-dlist dlist) no-such-element)))
+
+(ert-deftest dlist-test-remove-last ()
+  (let ((dlist (make-dlist))
+        (no-such-element "No such element"))
+    (assert-error (remove-last-from-dlist dlist) no-such-element)
+
+    (add-to-dlist dlist 1)
+    (add-to-dlist dlist 2)
+    (should (equal (remove-last-from-dlist dlist) 2))
+    (should (equal (dlist-as-list dlist) '(1)))
+
+    (add-to-dlist dlist 3)
+    (add-to-dlist dlist 4)
+    (should (equal (remove-last-from-dlist dlist) 4))
+    (should (equal (dlist-as-list dlist) '(1 3)))
+
+    (should (equal (remove-last-from-dlist dlist) 3))
+    (should (equal (remove-last-from-dlist dlist) 1))
+    (assert-error (remove-last-from-dlist dlist) no-such-element)))
 
 (ert-deftest dlist-test-clear ()
   (let ((dlist (make-dlist)))

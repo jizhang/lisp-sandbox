@@ -11,6 +11,7 @@
     (setf (dnode-next head) tail)
     (make-dlist-0 :head head :tail tail)))
 
+;;; Add
 (defun insert-dnode (dlist element previous next)
   (let ((node (make-dnode :value element :previous previous :next next)))
     (setf (dnode-next previous) node)
@@ -23,7 +24,7 @@
          (prev (dnode-previous tail)))
     (insert-dnode dlist element prev tail)))
 
-(defun add-to-dlist-at (dlist index element)
+(cl-defun add-to-dlist-at (dlist element &optional (index 0))
   (let* ((prev (dlist-head dlist))
          (next (dnode-next prev))
          (tail (dlist-tail dlist)))
@@ -34,22 +35,35 @@
     (unless (zerop index) (error "Index out of bounds"))
     (insert-dnode dlist element prev next)))
 
-(defalias 'remove-from-dlist #'remove-from-dlist-at "Remove first.")
+(defalias 'add-first-to-dlist #'add-to-dlist-at "Add first.")
+
+;;; Remove
+(defun remove-dnode (dnode)
+  (let ((prev (dnode-previous dnode))
+        (next (dnode-next dnode)))
+    (setf (dnode-next prev) next)
+    (setf (dnode-previous next) prev))
+  (dnode-value dnode))
 
 (cl-defun remove-from-dlist-at (dlist &optional (index 0))
-  (let* ((prev (dlist-head dlist))
-         (node (dnode-next prev))
+  (let* ((head (dlist-head dlist))
+         (node (dnode-next head))
          (tail (dlist-tail dlist)))
     (while (and (> index 0) (not (eq node tail)))
-      (setq prev node)
       (setq node (dnode-next node))
       (cl-decf index))
     (unless (and (zerop index) (not (eq node tail)))
       (error "No such element"))
-    (let ((next (dnode-next node)))
-      (setf (dnode-next prev) next)
-      (setf (dnode-previous next) prev))
-    (dnode-value node)))
+    (remove-dnode node)))
+
+(defalias 'remove-from-dlist #'remove-from-dlist-at "Remove first.")
+
+(defun remove-last-from-dlist (dlist)
+  (let* ((tail (dlist-tail dlist))
+         (node (dnode-previous tail)))
+    (when (eq node (dlist-head dlist))
+      (error "No such element"))
+    (remove-dnode node)))
 
 (defun clear-dlist (dlist)
   (let ((head (dlist-head dlist))
@@ -72,8 +86,10 @@
   (add-to-dlist dlist 2)
   (remove-from-dlist dlist)
   (add-to-dlist dlist 3)
-  (add-to-dlist-at dlist 1 10)
+  (add-to-dlist-at dlist 4 1)
   (remove-from-dlist-at dlist 2)
+  (add-first-to-dlist dlist 3)
+  (remove-last-from-dlist dlist)
   (princ (dlist-as-list dlist) t))
 
 (provide 'doubly-linked-list)
