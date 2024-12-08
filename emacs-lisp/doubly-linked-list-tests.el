@@ -1,14 +1,15 @@
 (require 'doubly-linked-list)
 
 (defmacro assert-error (form message)
-  `(let ((e (should-error ,form))) ; TODO Symbol e
-     (should (equal (cadr e) ,message))))
+  (let ((err (make-symbol "err")))
+    `(let ((,err (should-error ,form)))
+       (should (equal (cadr ,err) ,message)))))
 
 (ert-deftest dlist-test-add ()
   (let ((dlist (make-dlist)))
     (should (equal (dlist-as-list dlist) nil))
 
-    (add-to-dlist dlist 1)
+    (should (equal (add-to-dlist dlist 1) t))
     (should (equal (dlist-as-list dlist) '(1)))
 
     (add-to-dlist dlist 2)
@@ -17,7 +18,7 @@
 
 (ert-deftest dlist-test-add-at ()
   (let ((dlist (make-dlist)))
-    (add-first-to-dlist dlist 1)
+    (should (equal (add-first-to-dlist dlist 1) t))
     (should (equal (dlist-as-list dlist) '(1)))
 
     (add-first-to-dlist dlist 2)
@@ -82,5 +83,5 @@
   (let ((dlist (make-dlist)))
     (add-to-dlist dlist 1)
     (add-to-dlist dlist 2)
-    (clear-dlist dlist)
+    (should (equal (clear-dlist dlist) t))
     (should (equal (dlist-as-list dlist) nil))))

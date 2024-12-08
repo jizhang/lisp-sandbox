@@ -22,9 +22,10 @@
   "Append to the end."
   (let* ((tail (dlist-tail dlist))
          (prev (dnode-previous tail)))
-    (insert-dnode dlist element prev tail)))
+    (insert-dnode dlist element prev tail))
+  t)
 
-(cl-defun add-to-dlist-at (dlist element &optional (index 0))
+(defun add-to-dlist-at (dlist element index)
   (let* ((prev (dlist-head dlist))
          (next (dnode-next prev))
          (tail (dlist-tail dlist)))
@@ -33,9 +34,11 @@
       (setq next (dnode-next next))
       (cl-decf index))
     (unless (zerop index) (error "Index out of bounds"))
-    (insert-dnode dlist element prev next)))
+    (insert-dnode dlist element prev next))
+  t)
 
-(defalias 'add-first-to-dlist #'add-to-dlist-at "Add first.")
+(defun add-first-to-dlist (dlist element)
+  (add-to-dlist-at dlist element 0))
 
 ;;; Remove
 (defun remove-dnode (dnode)
@@ -45,7 +48,7 @@
     (setf (dnode-previous next) prev))
   (dnode-value dnode))
 
-(cl-defun remove-from-dlist-at (dlist &optional (index 0))
+(defun remove-from-dlist-at (dlist index)
   (let* ((head (dlist-head dlist))
          (node (dnode-next head))
          (tail (dlist-tail dlist)))
@@ -56,7 +59,9 @@
       (error "No such element"))
     (remove-dnode node)))
 
-(defalias 'remove-from-dlist #'remove-from-dlist-at "Remove first.")
+(defun remove-from-dlist (dlist)
+  "Remove first."
+  (remove-from-dlist-at dlist 0))
 
 (defun remove-last-from-dlist (dlist)
   (let* ((tail (dlist-tail dlist))
@@ -69,7 +74,8 @@
   (let ((head (dlist-head dlist))
         (tail (dlist-tail dlist)))
     (setf (dnode-next head) tail)
-    (setf (dnode-previous tail) head)))
+    (setf (dnode-previous tail) head))
+  t)
 
 (defun dlist-as-list (dlist)
   (let* ((head (dlist-head dlist))
