@@ -1,7 +1,7 @@
 (require 'doubly-linked-list)
 
 (defmacro assert-error (form message)
-  `(let ((e (should-error ,form)))
+  `(let ((e (should-error ,form))) ; TODO Symbol e
      (should (equal (cadr e) ,message))))
 
 (ert-deftest dlist-test-add ()

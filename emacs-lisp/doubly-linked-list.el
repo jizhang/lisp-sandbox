@@ -11,13 +11,17 @@
     (setf (dnode-next head) tail)
     (make-dlist-0 :head head :tail tail)))
 
+(defun insert-dnode (dlist element previous next)
+  (let ((node (make-dnode :value element :previous previous :next next)))
+    (setf (dnode-next previous) node)
+    (setf (dnode-previous next) node)
+    node))
+
 (defun add-to-dlist (dlist element)
   "Append to the end."
   (let* ((tail (dlist-tail dlist))
-         (prev (dnode-previous tail))
-         (node (make-dnode :value element :previous prev :next tail)))
-    (setf (dnode-next prev) node)
-    (setf (dnode-previous tail) node)))
+         (prev (dnode-previous tail)))
+    (insert-dnode dlist element prev tail)))
 
 (defun add-to-dlist-at (dlist index element)
   (let* ((prev (dlist-head dlist))
@@ -28,9 +32,7 @@
       (setq next (dnode-next next))
       (cl-decf index))
     (unless (zerop index) (error "Index out of bounds"))
-    (let ((node (make-dnode :value element :previous prev :next next)))
-      (setf (dnode-next prev) node)
-      (setf (dnode-previous next) node))))
+    (insert-dnode dlist element prev next)))
 
 (defun remove-from-dlist (dlist)
   "Remove first."
