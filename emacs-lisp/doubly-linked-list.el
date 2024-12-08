@@ -19,12 +19,25 @@
     (setf (dnode-next prev) node)
     (setf (dnode-previous tail) node)))
 
+(defun add-to-dlist-at (dlist index element)
+  (let* ((prev (dlist-head dlist))
+         (next (dnode-next prev))
+         (tail (dlist-tail dlist)))
+    (while (and (> index 0) (not (eq next tail)))
+      (setq prev next)
+      (setq next (dnode-next next))
+      (cl-decf index))
+    (unless (zerop index) (error "Index out of bounds"))
+    (let ((node (make-dnode :value element :previous prev :next next)))
+      (setf (dnode-next prev) node)
+      (setf (dnode-previous next) node))))
+
 (defun remove-from-dlist (dlist)
   "Remove first."
   (let* ((head (dlist-head dlist))
          (node (dnode-next head)))
     (when (eq node (dlist-tail dlist))
-      (error "List is empty"))
+      (error "No such element"))
     (let ((next (dnode-next node)))
       (setf (dnode-next head) next)
       (setf (dnode-previous next) head))
@@ -51,10 +64,7 @@
   (add-to-dlist dlist 2)
   (remove-from-dlist dlist)
   (add-to-dlist dlist 3)
+  (add-to-dlist-at dlist 1 10)
   (princ (dlist-as-list dlist) t))
 
 (provide 'doubly-linked-list)
-
-;; TODO
-;; Add and remove by index.
-;; Method dispatch. https://nullprogram.com/blog/2018/02/14/
