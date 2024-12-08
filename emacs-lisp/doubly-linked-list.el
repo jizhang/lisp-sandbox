@@ -34,15 +34,21 @@
     (unless (zerop index) (error "Index out of bounds"))
     (insert-dnode dlist element prev next)))
 
-(defun remove-from-dlist (dlist)
-  "Remove first."
-  (let* ((head (dlist-head dlist))
-         (node (dnode-next head)))
-    (when (eq node (dlist-tail dlist))
+(defalias 'remove-from-dlist #'remove-from-dlist-at "Remove first.")
+
+(cl-defun remove-from-dlist-at (dlist &optional (index 0))
+  (let* ((prev (dlist-head dlist))
+         (node (dnode-next prev))
+         (tail (dlist-tail dlist)))
+    (while (and (> index 0) (not (eq node tail)))
+      (setq prev node)
+      (setq node (dnode-next node))
+      (cl-decf index))
+    (unless (and (zerop index) (not (eq node tail)))
       (error "No such element"))
     (let ((next (dnode-next node)))
-      (setf (dnode-next head) next)
-      (setf (dnode-previous next) head))
+      (setf (dnode-next prev) next)
+      (setf (dnode-previous next) prev))
     (dnode-value node)))
 
 (defun clear-dlist (dlist)
@@ -67,6 +73,7 @@
   (remove-from-dlist dlist)
   (add-to-dlist dlist 3)
   (add-to-dlist-at dlist 1 10)
+  (remove-from-dlist-at dlist 2)
   (princ (dlist-as-list dlist) t))
 
 (provide 'doubly-linked-list)
