@@ -34,6 +34,24 @@
       (assert-error (add-to-dlist-at dlist 99 -1) message)
       (assert-error (add-to-dlist-at dlist 99 5) message))))
 
+(ert-deftest dlist-test-add-all ()
+  (let ((dlist (make-dlist)))
+    (should (equal (add-all-to-dlist dlist nil) t))
+    (should (equal (dlist-as-list dlist) nil))
+
+    (add-all-to-dlist dlist '(1))
+    (should (equal (dlist-as-list dlist) '(1)))
+
+    (add-all-to-dlist dlist '(2 3))
+    (should (equal (dlist-as-list dlist) '(1 2 3)))
+
+    (should-error (add-all-to-dlist dlist 4) :type 'wrong-type-argument))
+
+  (let* ((elements '(1 2 3))
+         (dlist (make-dlist elements))
+         (result (dlist-as-list dlist)))
+    (should (equal result elements))))
+
 (ert-deftest dlist-test-remove-at ()
   (let ((dlist (make-dlist))
         (no-such-element "No such element"))

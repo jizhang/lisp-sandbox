@@ -5,11 +5,13 @@
 (cl-defstruct (dlist (:constructor make-dlist-0))
   head tail)
 
-(defun make-dlist () ; TODO From list
+(defun make-dlist (&optional elements)
   (let* ((head (make-dnode))
          (tail (make-dnode :previous head)))
     (setf (dnode-next head) tail)
-    (make-dlist-0 :head head :tail tail)))
+    (let ((dlist (make-dlist-0 :head head :tail tail)))
+      (add-all-to-dlist dlist elements)
+      dlist)))
 
 ;;; Add
 (defun insert-dnode (dlist element previous next)
@@ -40,7 +42,16 @@
 (defun add-first-to-dlist (dlist element)
   (add-to-dlist-at dlist element 0))
 
-;; TODO Add all
+(defun add-all-to-dlist (dlist elements)
+  (let* ((tail (dlist-tail dlist))
+         (prev (dnode-previous tail)))
+    (dolist (element elements)
+      (let ((node (make-dnode :value element :previous prev)))
+        (setf (dnode-next prev) node)
+        (setq prev node)))
+    (setf (dnode-next prev) tail)
+    (setf (dnode-previous tail) prev))
+  t)
 
 ;;; Remove
 (defun remove-dnode (dnode)
