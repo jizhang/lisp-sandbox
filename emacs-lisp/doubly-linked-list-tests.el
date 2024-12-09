@@ -85,3 +85,16 @@
     (add-to-dlist dlist 2)
     (should (equal (clear-dlist dlist) t))
     (should (equal (dlist-as-list dlist) nil))))
+
+(ert-deftest dlist-test-size ()
+  (let ((dlist (make-dlist)))
+    (should (equal (dlist-size dlist) 0))
+
+    (add-to-dlist dlist 1)
+    (should (equal (dlist-size dlist) 1))
+
+    (add-to-dlist dlist 2)
+    (should (equal (dlist-size dlist) 2))
+
+    (clear-dlist dlist)
+    (should (equal (dlist-size dlist) 0))))

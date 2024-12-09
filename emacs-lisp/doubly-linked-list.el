@@ -70,12 +70,23 @@
       (error "No such element"))
     (remove-dnode node)))
 
+;;; Misc
 (defun clear-dlist (dlist)
   (let ((head (dlist-head dlist))
         (tail (dlist-tail dlist)))
     (setf (dnode-next head) tail)
     (setf (dnode-previous tail) head))
   t)
+
+(defun dlist-size (dlist)
+  (let* ((head (dlist-head dlist))
+         (node (dnode-next head))
+         (tail (dlist-tail dlist))
+         (size 0))
+    (while (not (eq node tail))
+      (cl-incf size)
+      (setq node (dnode-next node)))
+    size))
 
 (defun dlist-as-list (dlist)
   (let* ((head (dlist-head dlist))
