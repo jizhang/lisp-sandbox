@@ -86,6 +86,24 @@
     (should (equal (clear-dlist dlist) t))
     (should (equal (dlist-as-list dlist) nil))))
 
+(ert-deftest dlist-test-index-of ()
+  (let ((dlist (make-dlist)))
+    (should (equal (dlist-index-of dlist 1) -1))
+
+    (add-to-dlist dlist 1)
+    (add-to-dlist dlist 2)
+    (add-to-dlist dlist 3)
+    (should (equal (dlist-index-of dlist 1) 0))
+    (should (equal (dlist-index-of dlist 2) 1))
+    (should (equal (dlist-index-of dlist 3) 2))
+    (should (equal (dlist-index-of dlist 4) -1))
+
+    (should (dlist-contains dlist 2))
+    (should-not (dlist-contains dlist 4))
+
+    (clear-dlist dlist)
+    (should-not (dlist-contains dlist 2))))
+
 (ert-deftest dlist-test-size ()
   (let ((dlist (make-dlist)))
     (should (equal (dlist-size dlist) 0))

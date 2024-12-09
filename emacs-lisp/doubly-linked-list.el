@@ -5,7 +5,7 @@
 (cl-defstruct (dlist (:constructor make-dlist-0))
   head tail)
 
-(defun make-dlist ()
+(defun make-dlist () ; TODO From list
   (let* ((head (make-dnode))
          (tail (make-dnode :previous head)))
     (setf (dnode-next head) tail)
@@ -40,6 +40,8 @@
 (defun add-first-to-dlist (dlist element)
   (add-to-dlist-at dlist element 0))
 
+;; TODO Add all
+
 ;;; Remove
 (defun remove-dnode (dnode)
   (let ((prev (dnode-previous dnode))
@@ -70,7 +72,6 @@
       (error "No such element"))
     (remove-dnode node)))
 
-;;; Misc
 (defun clear-dlist (dlist)
   (let ((head (dlist-head dlist))
         (tail (dlist-tail dlist)))
@@ -78,6 +79,23 @@
     (setf (dnode-previous tail) head))
   t)
 
+;;; Search
+(defun dlist-index-of (dlist element)
+  (let* ((head (dlist-head dlist))
+         (node (dnode-next head))
+         (tail (dlist-tail dlist))
+         (index 0))
+    (while (and (not (eq node tail)) (not (equal (dnode-value node) element)))
+      (setq node (dnode-next node))
+      (cl-incf index))
+    (if (eq node tail)
+        -1
+      index)))
+
+(defun dlist-contains (dlist element)
+  (>= (dlist-index-of dlist element) 0))
+
+;;; Misc
 (defun dlist-size (dlist)
   (let* ((head (dlist-head dlist))
          (node (dnode-next head))
