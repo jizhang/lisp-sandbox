@@ -69,8 +69,9 @@
              (nums2 (merge-sort-immutable-1 (substring nums mid len))))
         (merge-sort-merge-immutable nums1 nums2)))))
 
-(let ((nums (vector 11 8 3 9 7 1 2 5)))
-  (merge-sort nums 0 (1- (length nums)))
-  (princ nums t)
+(let ((nums [11 8 3 9 7 1 2 5]))
+  (let ((nums (copy-sequence nums)))
+    (merge-sort nums 0 (1- (length nums)))
+    (princ nums t))
   (princ (merge-sort-immutable nums) t)
   (princ (merge-sort-immutable-1 nums) t))
