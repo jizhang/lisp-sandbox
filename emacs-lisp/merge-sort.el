@@ -1,8 +1,11 @@
-(defun halve (n) (/ n 2))
+(defsubst halve (n) (/ n 2))
+
+(defsubst merge-sort-mid (p r)
+  (+ p (halve (- r p))))
 
 (defun merge-sort (nums p r)
   (when (< p r)
-    (let ((q (+ p (halve (- r p)))))
+    (let ((q (merge-sort-mid p r)))
       (merge-sort nums p q)
       (merge-sort nums (1+ q) r)
       (merge-sort-merge nums p q r))))
@@ -10,14 +13,14 @@
 (defun merge-sort-merge (nums p q r)
   (let* ((range1 (cons p q))
          (range2 (cons (1+ q) r))
-         (tmp (merge-sort-immutable-merge nums nums range1 range2)))
+         (tmp (merge-sort-merge-immutable nums nums range1 range2)))
     (dotimes (k (length tmp))
       (aset nums (+ p k) (aref tmp k)))))
 
-(defun merge-sort-immutable-merge (nums1 nums2 &optional range1 range2)
-  (unless (consp range1)
+(defun merge-sort-merge-immutable (nums1 nums2 &optional range1 range2)
+  (when (null range1)
     (setq range1 (cons 0 (1- (length nums1)))))
-  (unless (consp range2)
+  (when (null range2)
     (setq range2 (cons 0 (1- (length nums2)))))
 
   (let* ((i (car range1))
@@ -52,16 +55,26 @@
 
     res))
 
-(defun merge-sort-immutable (nums)
+(cl-defun merge-sort-immutable (nums &optional (p 0) (r (1- (length nums))))
+  (cond ((> p r) (vector))
+        ((= p r) (vector (aref nums p)))
+        (t
+         (let* ((q (merge-sort-mid p r))
+                (nums1 (merge-sort-immutable nums p q))
+                (nums2 (merge-sort-immutable nums (1+ q) r)))
+           (merge-sort-merge-immutable nums1 nums2)))))
+
+(defun merge-sort-immutable-1 (nums)
   (let ((len (length nums)))
     (if (<= len 1)
         nums
       (let* ((mid (halve len))
-             (nums1 (merge-sort-immutable (substring nums 0 mid)))
-             (nums2 (merge-sort-immutable (substring nums mid len))))
-        (merge-sort-immutable-merge nums1 nums2)))))
+             (nums1 (merge-sort-immutable-1 (substring nums 0 mid)))
+             (nums2 (merge-sort-immutable-1 (substring nums mid len))))
+        (merge-sort-merge-immutable nums1 nums2)))))
 
 (let* ((nums (vector 11 8 3 9 7 1 2 5)))
   (merge-sort nums 0 (1- (length nums)))
   (princ nums t)
-  (princ (merge-sort-immutable nums) t))
+  (princ (merge-sort-immutable nums) t)
+  (princ (merge-sort-immutable-1 nums) t))
