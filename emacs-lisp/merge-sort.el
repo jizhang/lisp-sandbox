@@ -1,7 +1,5 @@
 (defsubst halve (n) (/ n 2))
-
-(defsubst merge-sort-mid (p r)
-  (+ p (halve (- r p))))
+(defsubst merge-sort-mid (p r) (+ p (halve (- r p))))
 
 (defun merge-sort (nums p r)
   (when (< p r)
@@ -18,10 +16,8 @@
       (aset nums (+ p k) (aref tmp k)))))
 
 (defun merge-sort-merge-immutable (nums1 nums2 &optional range1 range2)
-  (when (null range1)
-    (setq range1 (cons 0 (1- (length nums1)))))
-  (when (null range2)
-    (setq range2 (cons 0 (1- (length nums2)))))
+  (unless (consp range1) (setq range1 (cons 0 (1- (length nums1)))))
+  (unless (consp range2) (setq range2 (cons 0 (1- (length nums2)))))
 
   (let* ((i (car range1))
          (q (cdr range1))
@@ -73,7 +69,7 @@
              (nums2 (merge-sort-immutable-1 (substring nums mid len))))
         (merge-sort-merge-immutable nums1 nums2)))))
 
-(let* ((nums (vector 11 8 3 9 7 1 2 5)))
+(let ((nums (vector 11 8 3 9 7 1 2 5)))
   (merge-sort nums 0 (1- (length nums)))
   (princ nums t)
   (princ (merge-sort-immutable nums) t)
