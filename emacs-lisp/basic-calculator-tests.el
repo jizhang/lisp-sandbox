@@ -5,7 +5,12 @@
 (ert-deftest basic-calculator-test-reverse-polish-notation ()
   (let ((cases '(((2 1 + 3 *) . 9)
                  ((4 13 5 / +) . 6)
-                 ((10 6 9 3 + -11 * / * 17 + 5 +) . 22))))
+                 ((10 6 9 3 + -11 * / * 17 + 5 +) . 22)
+                 ((1 u) . -1)
+                 ((1 u 2 +) . 1)
+                 ((1 2 u +) . -1)
+                 ((1 2 + u) . -3)
+                 ((1 u 2 u 3 u - u -) . 0))))
     (assert-cases #'reverse-polish-notation cases)))
 
 (ert-deftest basic-calculator-convert-to-rpn ()

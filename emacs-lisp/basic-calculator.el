@@ -5,11 +5,14 @@
 (defun reverse-polish-notation (tokens)
   (let ((s (make-stack)))
     (dolist (token tokens (stack-pop s))
-      (if (memq token '(+ - * /))
-          (let ((b (stack-pop s))
-                (a (stack-pop s)))
-            (stack-push s (funcall token a b)))
-        (stack-push s token)))))
+      (cond ((memq token '(+ - * /))
+             (let ((b (stack-pop s))
+                   (a (stack-pop s)))
+               (stack-push s (funcall token a b))))
+            ((eq token 'u)
+             (stack-push s (- (stack-pop s))))
+            (t
+             (stack-push s token))))))
 
 (defun basic-calculator-convert-to-rpn (input)
   (let ((output (make-dlist))
@@ -58,7 +61,7 @@
     (princ tokens t) ; FIXME
     (reverse-polish-notation tokens)))
 
-(princ (basic-calculator "(((3 + 3) / 2))") t)
+(princ (reverse-polish-notation '(1 2 u +)) t)
 
 ;; TODO
 ;; Negative expressions: -10 + 1, -(10 + 1)
