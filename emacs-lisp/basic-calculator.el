@@ -3,7 +3,6 @@
 (require 'doubly-linked-list)
 
 (defun reverse-polish-notation (tokens)
-  (princ tokens t) ; FIXME
   (let ((s (make-stack)))
     (dolist (token tokens (stack-pop s))
       (if (memq token '(+ - * /))
@@ -12,7 +11,7 @@
             (stack-push s (funcall token a b)))
         (stack-push s token)))))
 
-(defun basic-calculator (input)
+(defun basic-calculator-convert-to-rpn (input)
   (let ((output (make-dlist))
         (s (make-stack))
         (i 0))
@@ -26,11 +25,12 @@
            (add-to-dlist output num)))
 
         ((or ?+ ?- ?* ?/)
-         (let ((op (intern (char-to-string (aref input i))))
-               (top (stack-peek s)))
-           (when (memq top '(+ - * /))
-             (unless (and (memq op '(* /)) (memq top '(+ -)))
-               (add-to-dlist output (stack-pop s))))
+         (let* ((op (intern (char-to-string (aref input i))))
+                (op-precedence (basic-calculator-operator-precedence op)))
+           (while (and (memq (stack-peek s) '(+ - * /))
+                       (>= (basic-calculator-operator-precedence (stack-peek s))
+                           op-precedence))
+             (add-to-dlist output (stack-pop s)))
            (stack-push s op)))
 
         (?\(
@@ -46,13 +46,21 @@
     (while (> (stack-size s) 0)
       (add-to-dlist output (stack-pop s)))
 
-    (reverse-polish-notation (dlist-as-list output))))
+    (dlist-as-list output)))
+
+(defun basic-calculator-operator-precedence (op)
+  (cond ((memq op '(+ -)) 10)
+        ((memq op '(* /)) 20)
+        (t 0)))
+
+(defun basic-calculator (input)
+  (let ((tokens (basic-calculator-convert-to-rpn input)))
+    (princ tokens t) ; FIXME
+    (reverse-polish-notation tokens)))
 
 (princ (basic-calculator "(((3 + 3) / 2))") t)
 
 ;; TODO
 ;; Negative expressions: -10 + 1, -(10 + 1)
-;; Calculate directly.
-;; Use recursion.
 
 (provide 'basic-calculator)
