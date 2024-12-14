@@ -2,7 +2,7 @@
 (require 'stack)
 (require 'doubly-linked-list)
 
-(defun reverse-polish-notation (tokens)
+(defun bc-reverse-polish-notation (tokens)
   (let ((s (make-stack)))
     (dolist (token tokens (stack-pop s))
       (cond ((memq token '(+ - * /))
@@ -14,7 +14,7 @@
             (t
              (stack-push s token))))))
 
-(defun basic-calculator-tokenize (input)
+(defun bc-tokenize (input)
   (let ((tokens (make-dlist))
         (i 0))
     (while (< i (length input))
@@ -33,18 +33,18 @@
 
     (dlist-as-list tokens)))
 
-(defun basic-calculator-convert-to-rpn (input)
-  (let ((tokens (basic-calculator-tokenize input))
+(defun bc-convert-to-rpn (input)
+  (let ((tokens (bc-tokenize input))
         (output (make-dlist))
         (s (make-stack))
         (previous-token nil))
     (dolist (token tokens)
       (cond
        ((memq token '(+ - * /))
-        (let* ((op (if (basic-calculator-negation-p token previous-token) 'u token))
-               (op-precedence (basic-calculator-operator-precedence op)))
+        (let* ((op (if (bc-unary-negation-p token previous-token) 'u token))
+               (op-precedence (bc-operator-precedence op)))
           (while (and (memq (stack-peek s) '(+ - * / u))
-                      (>= (basic-calculator-operator-precedence (stack-peek s))
+                      (>= (bc-operator-precedence (stack-peek s))
                           op-precedence))
             (add-to-dlist output (stack-pop s)))
           (stack-push s op)))
@@ -67,21 +67,21 @@
 
     (dlist-as-list output)))
 
-(defun basic-calculator-negation-p (op previous-token)
+(defun bc-unary-negation-p (op previous-token)
   (and (eq op '-)
        (or (null previous-token)
            (memq previous-token '(+ - * / \()))))
 
-(defun basic-calculator-operator-precedence (op)
+(defun bc-operator-precedence (op)
   (cond ((memq op '(+ -)) 10)
         ((memq op '(* /)) 20)
         ((memq op '(u)) 30)
         (t 0)))
 
-(defun basic-calculator (input)
-  (let ((tokens (basic-calculator-convert-to-rpn input)))
-    (reverse-polish-notation tokens)))
+(defun bc-calculate (input)
+  (let ((tokens (bc-convert-to-rpn input)))
+    (bc-reverse-polish-notation tokens)))
 
-(princ (basic-calculator-convert-to-rpn "-1") t)
+(princ (bc-convert-to-rpn "-1") t)
 
 (provide 'basic-calculator)
