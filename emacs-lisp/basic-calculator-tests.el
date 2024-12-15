@@ -32,7 +32,8 @@
                  ("-(1 + 2)" . (1 2 + u))
                  ("-1 - -(-2 - -3)" . (1 u 2 u 3 u - u -))
                  ("-1 * -(2 + -3)" . (1 u 2 3 u + u *))
-                 ("(1 + 2) * -3" . (1 2 + 3 u *)))))
+                 ("(1 + 2) * -3" . (1 2 + 3 u *))
+                 ("1---1" . (1 1 u u -)))))
     (assert-cases #'bc-convert-to-rpn cases)))
 
 (ert-deftest bc-test-calculate ()

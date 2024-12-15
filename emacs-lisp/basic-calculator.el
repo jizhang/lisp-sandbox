@@ -41,11 +41,9 @@
     (dolist (token tokens)
       (cond
        ((memq token '(+ - * /))
-        (let* ((op (if (bc-unary-negation-p token previous-token) 'u token))
-               (op-precedence (bc-operator-precedence op)))
+        (let ((op (if (bc-unary-negation-p token previous-token) 'u token)))
           (while (and (memq (stack-peek s) '(+ - * / u))
-                      (>= (bc-operator-precedence (stack-peek s))
-                          op-precedence))
+                      (bc-operator-pop-p op (stack-peek s)))
             (add-to-dlist output (stack-pop s)))
           (stack-push s op)))
 
@@ -76,7 +74,22 @@
   (cond ((memq op '(+ -)) 10)
         ((memq op '(* /)) 20)
         ((memq op '(u)) 30)
-        (t 0)))
+        (t (error "Unknown operator"))))
+
+(defun bc-operator-associativity (op)
+  (cond ((memq op '(+ - * /)) 'left)
+        ((memq op '(u)) 'right)
+        (t (error "Unknown operator"))))
+
+(defun bc-operator-pop-p (op top)
+  (let ((op-associativity (bc-operator-associativity op))
+        (op-precedence (bc-operator-precedence op))
+        (top-precedence (bc-operator-precedence top)))
+    (cond ((eq op-associativity 'left)
+           (<= op-precedence top-precedence))
+          ((eq op-associativity 'right)
+           (< op-precedence top-precedence))
+          (t (cl-assert nil)))))
 
 (defun bc-calculate (input)
   (let ((tokens (bc-convert-to-rpn input)))
