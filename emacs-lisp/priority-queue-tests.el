@@ -31,7 +31,7 @@
     (priority-queue-add queue 6 6)
     (priority-queue--assert-pairs queue '(7 4 6 2 3 1 5))
 
-    (assert-error (priority-queue-add queue 8 8) "Priority queue is full")))
+    (assert-error (priority-queue-add queue 8 8) "Queue full")))
 
 (ert-deftest priority-queue-test-remove ()
   (let ((queue (priority-queue-create 5)))
@@ -48,4 +48,5 @@
     (priority-queue-remove queue)
     (priority-queue-remove queue)
     (priority-queue-remove queue)
-    (assert-error (priority-queue-remove queue) "No such element")))
+    (assert-error (priority-queue-remove queue) "No such element")
+    (should (equal (priority-queue-pairs queue) (make-vector 6 nil)))))
