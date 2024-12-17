@@ -49,7 +49,7 @@
                 child-priority right-priority))
 
         (if (> priority child-priority)
-            (setq current size)
+            (setq half 0) ; Exit loop
           (aset pairs current (aref pairs child))
           (setq current child)))
 
@@ -57,8 +57,16 @@
 
     top-pair))
 
+(defun priority-queue-peek (queue)
+  (if (zerop (priority-queue-size queue))
+      nil
+    (aref (priority-queue-pairs queue) 1)))
+
 (let ((queue (priority-queue-create 5)))
   (priority-queue-add queue 2 2)
+  (priority-queue-add queue 1 1)
+  (priority-queue-add queue 3 3)
+  (priority-queue-remove queue)
   (princ (priority-queue-pairs queue) t))
 
 (provide 'priority-queue)
