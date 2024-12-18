@@ -18,6 +18,17 @@
                (setq result mid)))))
     result))
 
+(cl-defun binary-search-iter (nums target &optional (low 0) (high (1- (length nums))))
+  (if (> low high)
+      -1
+    (let* ((mid (binsearch-mid low high))
+           (mid-value (aref nums mid)))
+      (cond ((< target mid-value)
+             (binary-search-iter nums target low (1- mid)))
+            ((> target mid-value)
+             (binary-search-iter nums target (1+ mid) high))
+            (t mid)))))
+
 (cl-defun binsearch-find-first (nums target)
   (let ((low 0)
         (high (1- (length nums))))
