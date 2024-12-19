@@ -27,10 +27,10 @@
            (while (and (< (1+ i) (length input))
                        (cl-digit-char-p (aref input (1+ i))))
              (setq num (+ (* num 10) (- (aref input (cl-incf i)) ?0))))
-           (add-to-dlist tokens num)))
+           (dlist-add tokens num)))
 
         ((or ?+ ?- ?* ?/ ?^ ?\( ?\))
-         (add-to-dlist tokens (intern (char-to-string (aref input i))))))
+         (dlist-add tokens (intern (char-to-string (aref input i))))))
 
       (cl-incf i))
 
@@ -47,7 +47,7 @@
         (let ((op (if (bc-unary-negation-p token previous-token) 'u token)))
           (while (and (memq (stack-peek s) '(+ - * / ^ u))
                       (bc-operator-pop-p op (stack-peek s)))
-            (add-to-dlist output (stack-pop s)))
+            (dlist-add output (stack-pop s)))
           (stack-push s op)))
 
        ((eq token '\()
@@ -55,16 +55,16 @@
 
        ((eq token '\))
         (while (not (eq (stack-peek s) '\())
-          (add-to-dlist output (stack-pop s)))
+          (dlist-add output (stack-pop s)))
         (stack-pop s))
 
        (t
-        (add-to-dlist output token)))
+        (dlist-add output token)))
 
       (setq previous-token token))
 
     (while (> (stack-size s) 0)
-      (add-to-dlist output (stack-pop s)))
+      (dlist-add output (stack-pop s)))
 
     (dlist-as-list output)))
 
