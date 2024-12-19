@@ -1,0 +1,60 @@
+(require 'cl-lib)
+
+(cl-defstruct (hash-map (:constructor hash-map-create))
+  (table (make-vector 10 nil))
+  (size 0))
+
+(cl-defun hash-map-put (map key value)
+  (let* ((table (hash-map-table map))
+         (slot (hash-map--slot map key))
+         (current (aref table slot)))
+    (while (consp current)
+      (when (equal (caar current) key)
+        (let ((old-value (cdar current)))
+          (setcdr (car current) value)
+          (cl-return-from hash-map-put old-value)))
+
+      (setq current (cdr current)))
+
+    (push (cons key value) (aref table slot))
+    (cl-incf (hash-map-size map))
+    nil))
+
+(cl-defun hash-map-remove (map key)
+  (let* ((table (hash-map-table map))
+         (slot (hash-map--slot map key))
+         (current (aref table slot))
+         (prev nil))
+    (while (consp current)
+      (when (equal (caar current) key)
+        (if (consp prev)
+            (setcdr prev (cdr current))
+          (aset table slot (cdr current)))
+        (cl-decf (hash-map-size map))
+        (cl-return-from hash-map-remove (cdar current)))
+
+      (setq prev current)
+      (setq current (cdr current)))
+
+    nil))
+
+(cl-defun hash-map-get (map key)
+  (let* ((table (hash-map-table map))
+         (slot (hash-map--slot map key))
+         (current (aref table slot)))
+    (while (consp current)
+      (when (equal (caar current) key)
+        (cl-return-from hash-map-get (cdar current)))
+      (setq current (cdr current)))
+    nil))
+
+(defun hash-map--slot (map key)
+  (let* ((hash (sxhash-equal key))
+         (n (length (hash-map-table map))))
+    (abs (% hash n))))
+
+(let ((map (hash-map-create)))
+  (hash-map-put map "hello" "world")
+  (princ (hash-map-table map) t))
+
+(provide 'hash-map)
