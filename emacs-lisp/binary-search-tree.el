@@ -114,9 +114,31 @@
       (traverse (bst-root bst)))
     (reverse result)))
 
+(defun bst-height (bst)
+  (cl-labels
+      ((height (node)
+         (if (null node)
+             0
+           (1+ (max (height (bst-node-left node))
+                    (height (bst-node-right node)))))))
+    (height (bst-root bst))))
+
+(defun bst-to-vector (bst)
+  (let* ((height (bst-height bst))
+         (num-nodes (1- (expt 2 height)))
+         (result (make-vector (1+ num-nodes) nil)))
+    (cl-labels
+        ((dfs (node index)
+           (when (bst-node-p node)
+             (aset result index (bst-node-value node))
+             (dfs (bst-node-left node) (* index 2))
+             (dfs (bst-node-right node) (1+ (* index 2))))))
+      (dfs (bst-root bst) 1))
+    result))
+
 (let ((bst (bst-create)))
   (dolist (value '(2 1 4 3 5)) (bst-insert bst value))
   (bst-remove-immutable bst 2)
-  (princ (bst-to-list bst) t))
+  (princ (bst-to-vector bst) t))
 
 (provide 'binary-search-tree)
