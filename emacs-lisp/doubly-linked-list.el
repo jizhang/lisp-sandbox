@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+(require 'generator)
 (require 'cl-lib)
 
 (cl-defstruct dnode (value 0) previous next)
@@ -117,15 +119,22 @@
       (setq node (dnode-next node)))
     size))
 
-(defun dlist-as-list (dlist)
+(iter-defun dlist-iterator (dlist &optional reversed)
   (let* ((head (dlist-head dlist))
          (tail (dlist-tail dlist))
-         (node (dnode-previous tail))
-         (result nil))
-    (while (not (eq node head))
-      (push (dnode-value node) result)
-      (setq node (dnode-previous node)))
-    result))
+         (from (if reversed tail head))
+         (to (if reversed head tail))
+         (next-fn (if reversed #'dnode-previous #'dnode-next))
+         (node (funcall next-fn from)))
+    (while (not (eq node to))
+      (iter-yield (dnode-value node))
+      (setq node (funcall next-fn node)))))
+
+(defun dlist-as-list (dlist &optional reversed)
+  (cl-loop
+   for value
+   iter-by (dlist-iterator dlist reversed)
+   collect value))
 
 (let ((dlist (make-dlist)))
   (dlist-add dlist 1)

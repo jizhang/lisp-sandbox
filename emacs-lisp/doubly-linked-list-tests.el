@@ -11,7 +11,8 @@
 
     (dlist-add dlist 2)
     (dlist-add dlist 3)
-    (should (equal (dlist-as-list dlist) '(1 2 3)))))
+    (should (equal (dlist-as-list dlist) '(1 2 3)))
+    (should (equal (dlist-as-list dlist t) '(3 2 1)))))
 
 (ert-deftest dlist-test-add-at ()
   (let ((dlist (make-dlist)))
