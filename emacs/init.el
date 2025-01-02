@@ -109,14 +109,20 @@
         (forward-char)
       (insert-char c))))
 
+(defun buffer-prefix ()
+  (let ((basename (file-name-nondirectory (buffer-file-name))))
+    (cond
+     ((string-prefix-p "en-" basename) 'en)
+     ((string-prefix-p "jp-" basename) 'jp)
+     (t (error "Unknown file type")))))
+
 (defun bubble-phrase ()
   (interactive "*")
   (if (use-region-p)
       (bubble-region (region-beginning) (region-end))
-    (let ((basename (file-name-nondirectory (buffer-file-name))))
-      (cond ((string-prefix-p "en-" basename) (mark-phrase-en))
-            ((string-prefix-p "jp-" basename) (mark-phrase-jp))
-            (t (error "Unknown file type"))))
+    (pcase (buffer-prefix)
+      ('en (mark-phrase-en))
+      ('jp (mark-phrase-jp)))
     (bubble-region (region-beginning) (region-end))))
 
 (defun mark-phrase (delimiter)
@@ -156,6 +162,23 @@
   (beginning-of-line)
   (while (search-forward " " (pos-eol) t)
     (replace-match "　")))
+
+(defun count-phrases ()
+  (interactive)
+  (let* ((line (if (use-region-p)
+                   (buffer-substring (region-beginning) (region-end))
+                 (save-excursion
+                   (beginning-of-line)
+                   (thing-at-point 'line))))
+         (exps (pcase (buffer-prefix)
+                 ('en (cons "[[:space:],]+" ","))
+                 ('jp (cons "[[:space:]]+" "[[:blank:]]"))))
+         (line (string-trim line (car exps) (car exps)))
+         (count (if (string-empty-p line)
+                    0
+                  (length (string-split line (cdr exps))))))
+    (message "%d" count)
+    count))
 
 (defun insert-date (arg)
   (interactive "*P")
