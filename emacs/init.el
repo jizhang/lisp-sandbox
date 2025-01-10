@@ -5,6 +5,7 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
+(setq custom-file (make-temp-file "emacs-custom"))
 
 ;; https://github.com/d12frosted/homebrew-emacs-plus/issues/720
 (use-package exec-path-from-shell
@@ -83,7 +84,6 @@
 
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(background-color . "#FFFFDF"))
-;; (menu-bar-mode -1)
 (tool-bar-mode -1)
 (column-number-mode 1)
 (electric-pair-mode 1)
@@ -222,17 +222,3 @@
   (if (consp arg)
       (call-interactively 'ert)
     (ert t)))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(exec-path-from-shell rust-mode delight company editorconfig markdown-mode)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
