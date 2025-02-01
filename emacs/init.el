@@ -105,7 +105,7 @@
 (defun ensure-string (s)
   (cl-assert (stringp s))
   (dolist (c (append s nil))
-    (if (char-equal (char-after) c)
+    (if (and (char-after) (char-equal (char-after) c))
         (forward-char)
       (insert-char c))))
 
