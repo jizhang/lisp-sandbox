@@ -87,7 +87,8 @@
 (tool-bar-mode -1)
 (column-number-mode 1)
 (electric-pair-mode 1)
-(setq-default word-wrap t)
+(setq-default word-wrap t
+              word-wrap-by-category t)
 (setq confirm-kill-emacs 'yes-or-no-p)
 (setq eval-expression-print-length 1000)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
