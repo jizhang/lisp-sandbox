@@ -28,6 +28,9 @@
 
 (use-package editorconfig
   :init (editorconfig-mode 1)
+  :config
+  (add-to-list 'editorconfig-indentation-alist
+               '(js-json-mode js-indent-level))
   :delight)
 
 (use-package vertico
