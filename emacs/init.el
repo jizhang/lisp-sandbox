@@ -10,7 +10,9 @@
 ;; https://github.com/d12frosted/homebrew-emacs-plus/issues/720
 (use-package exec-path-from-shell
   :if (eq system-type 'darwin)
-  :init (exec-path-from-shell-initialize))
+  :config
+  (add-to-list 'exec-path-from-shell-variables "https_proxy")
+  (exec-path-from-shell-initialize))
 
 (use-package delight
   :config
