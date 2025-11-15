@@ -20,19 +20,16 @@
              (abbrev-mode " Abv" abbrev))))
 
 (use-package markdown-mode
-  :custom
-  (markdown-command '("pandoc" "--embed-resources" "--standalone" "--shift-heading-level-by=-1"))
-  (markdown-command-needs-filename (eq system-type 'windows-nt))
   :bind (:map markdown-mode-map
               ("C-c a" . bubble-phrase)
               ("C-c d" . insert-date)
               ("C-c c" . calculate-calories)))
 
 (use-package editorconfig
-  :init (editorconfig-mode 1)
   :config
   (add-to-list 'editorconfig-indentation-alist
                '(js-json-mode js-indent-level))
+  (editorconfig-mode 1)
   :delight)
 
 (use-package vertico
