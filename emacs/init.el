@@ -48,14 +48,10 @@
 
 (use-package company
   :hook (prog-mode . company-mode)
-  :config
-  (unless (executable-find "clang")
-    (delete 'company-clang company-backends))
   :delight)
 
 (use-package flymake
-  :hook ((c-mode . flymake-mode)
-         (emacs-lisp-mode . enable-flymake-el))
+  :hook ((emacs-lisp-mode . enable-flymake-el))
   :config
   (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake)
   :bind (:map flymake-mode-map
@@ -63,16 +59,6 @@
               ("C-c f a" . flymake-show-project-diagnostics)
               ("C-c f n" . flymake-goto-next-error)
               ("C-c f p" . flymake-goto-prev-error)))
-
-(use-package rust-mode
-  :if (executable-find "rustc"))
-
-(use-package eglot
-  :init
-  (when (executable-find "rust-analyzer")
-    (add-hook 'rust-mode-hook 'eglot-ensure))
-  :custom
-  (eglot-autoshutdown t))
 
 (use-package compile
   :bind (("<f5>" . compile-now))
@@ -209,8 +195,7 @@
 (defun compile-now ()
   (interactive)
   (save-buffer)
-  (cond ((derived-mode-p 'rust-mode) (rust-run))
-        ((derived-mode-p 'emacs-lisp-mode) (eval-buffer))
+  (cond ((derived-mode-p 'emacs-lisp-mode) (eval-buffer))
         (t (call-interactively 'compile))))
 
 (defun enable-flymake-el ()
